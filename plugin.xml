@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="com.dmarc.cordovacall" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+  <name>CordovaCall</name>
+  <js-module name="CordovaCall" src="www/CordovaCall.js">
+    <clobbers target="cordova.plugins.CordovaCall" />
+  </js-module>
+  <platform name="android">
+    <config-file parent="/*" target="res/xml/config.xml">
+      <feature name="CordovaCall">
+        <param name="android-package" value="com.dmarc.cordovacall.CordovaCall" />
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+    <config-file parent="/*" target="AndroidManifest.xml">
+        <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"/>
+    </config-file>
+    <config-file parent="/manifest/application" target="AndroidManifest.xml">
+        <service android:name="com.dmarc.cordovacall.MyConnectionService"
+                 android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.ConnectionService" />
+            </intent-filter>
+        </service>
+    </config-file>
+    <source-file src="src/android/CordovaCall.java" target-dir="src/com/dmarc/cordovacall" />
+    <source-file src="src/android/MyConnectionService.java" target-dir="src/com/dmarc/cordovacall" />
+  </platform>
+  <platform name="ios">
+    <config-file parent="/*" target="config.xml">
+      <feature name="CordovaCall">
+        <param name="ios-package" value="CordovaCall" />
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+    <source-file src="src/ios/CordovaCall.m" />
+  </platform>
+</plugin>

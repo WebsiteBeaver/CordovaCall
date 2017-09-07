@@ -1,0 +1,19 @@
+{
+  "name": "CordovaCall",
+  "version": "1.0.0",
+  "description": "Easily use CallKit and ConnectionService UI with JavaScript",
+  "cordova": {
+    "id": "com.dmarc.cordovacall",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "David Marcus",
+  "license": "ISC"
+}
