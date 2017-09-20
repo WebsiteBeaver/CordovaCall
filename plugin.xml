@@ -13,6 +13,7 @@
     </config-file>
     <config-file parent="/*" target="AndroidManifest.xml">
         <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"/>
+        <uses-permission android:name="android.permission.CALL_PHONE"/>
     </config-file>
     <config-file parent="/manifest/application" target="AndroidManifest.xml">
         <service android:name="com.dmarc.cordovacall.MyConnectionService"

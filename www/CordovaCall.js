@@ -16,22 +16,26 @@ exports.getConfig = function(success, error) {
     exec(success, error, "CordovaCall", "getConfig", []);
 };
 
-exports.incomingCall = function(arg0, success, error) {
-    exec(success, error, "CordovaCall", "incomingCall", [arg0]);
+//methods start here
+
+exports.receiveCall = function(from, success, error) {
+    exec(success, error, "CordovaCall", "receiveCall", [from]);
 };
 
-exports.outgoingCall = function(arg0, success, error) {
-    exec(success, error, "CordovaCall", "outgoingCall", [arg0]);
+exports.makeCall = function(to, success, error) {
+    exec(success, error, "CordovaCall", "makeCall", [to]);
 };
 
-exports.connectCall = function(arg0, success, error) {
-    exec(success, error, "CordovaCall", "connectCall", [arg0]);
+exports.connectCall = function(success, error) {
+    exec(success, error, "CordovaCall", "connectCall", []);
 };
 
-exports.endCall = function(arg0, success, error) {
-    exec(success, error, "CordovaCall", "endCall", [arg0]);
-};
-
-exports.calls = function(arg0, success, error) {
-    exec(success, error, "CordovaCall", "calls", [arg0]);
+exports.on = function(e, f) {
+    var success = function(message) {
+      console.log('hello world');
+      f(message);
+    };
+    var error = function() {
+    };
+    exec(success, error, "CordovaCall", "registerEvent", []);
 };

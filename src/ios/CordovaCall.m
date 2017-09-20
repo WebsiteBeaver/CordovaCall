@@ -120,7 +120,6 @@
 {
     CDVPluginResult* pluginResult = nil;
     NSString* callUUIDString = [command.arguments objectAtIndex:0];
-    //NSUUID *callUUID = [[NSUUID alloc] initWithUUIDString:callUUIDString];
     NSUUID *callUUID = [[NSUUID alloc] init];
     
     CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
