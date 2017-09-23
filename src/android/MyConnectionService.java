@@ -29,23 +29,20 @@ public class MyConnectionService extends ConnectionService {
         return conn;
     }
 
+    public static void deinitConnection() {
+        conn = null;
+    }
+
     @Override
     public Connection onCreateIncomingConnection(final PhoneAccountHandle connectionManagerPhoneAccount, final ConnectionRequest request) {
         final Connection connection = new Connection() {
             @Override
-            public void onHold() {
-                super.onHold();
-            }
-
-            @Override
             public void onAnswer() {
-                super.onAnswer();
-                this.setActive();
-                ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts();
+                ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("answer");
                 for (final CallbackContext callbackContext : callbackContexts) {
                     CordovaPlugin.cordova.getThreadPool().execute(new Runnable() {
                         public void run() {
-                            PluginResult result = new PluginResult(PluginResult.Status.OK, "onAnswer called successfully");
+                            PluginResult result = new PluginResult(PluginResult.Status.OK, "answer event called successfully");
                             result.setKeepCallback(true);
                             callbackContext.sendPluginResult(result);
                         }
@@ -55,24 +52,44 @@ public class MyConnectionService extends ConnectionService {
 
             @Override
             public void onReject() {
-                super.onReject();
                 DisconnectCause cause = new DisconnectCause(DisconnectCause.REJECTED);
                 this.setDisconnected(cause);
+                this.destroy();
+                conn = null;
+                ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("reject");
+                for (final CallbackContext callbackContext : callbackContexts) {
+                    CordovaPlugin.cordova.getThreadPool().execute(new Runnable() {
+                        public void run() {
+                            PluginResult result = new PluginResult(PluginResult.Status.OK, "reject event called successfully");
+                            result.setKeepCallback(true);
+                            callbackContext.sendPluginResult(result);
+                        }
+                    });
+                }
             }
 
             @Override
             public void onAbort() {
                 super.onAbort();
-
             }
 
             @Override
             public void onDisconnect() {
-                super.onDisconnect();
                 DisconnectCause cause = new DisconnectCause(DisconnectCause.LOCAL);
                 this.setDisconnected(cause);
+                this.destroy();
+                conn = null;
+                ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("hangup");
+                for (final CallbackContext callbackContext : callbackContexts) {
+                    CordovaPlugin.cordova.getThreadPool().execute(new Runnable() {
+                        public void run() {
+                            PluginResult result = new PluginResult(PluginResult.Status.OK, "hangup event called successfully");
+                            result.setKeepCallback(true);
+                            callbackContext.sendPluginResult(result);
+                        }
+                    });
+                }
             }
-
         };
         connection.setAddress(Uri.parse(request.getExtras().getString("from")), TelecomManager.PRESENTATION_ALLOWED);
         conn = connection;
@@ -83,15 +100,13 @@ public class MyConnectionService extends ConnectionService {
     public Connection onCreateOutgoingConnection(PhoneAccountHandle connectionManagerPhoneAccount, ConnectionRequest request) {
         final Connection connection = new Connection() {
             @Override
-            public void onHold() {
-            }
-
-            @Override
             public void onAnswer() {
+                super.onAnswer();
             }
 
             @Override
             public void onReject() {
+                super.onReject();
             }
 
             @Override
@@ -102,8 +117,21 @@ public class MyConnectionService extends ConnectionService {
 
             @Override
             public void onDisconnect() {
+                DisconnectCause cause = new DisconnectCause(DisconnectCause.LOCAL);
+                this.setDisconnected(cause);
+                this.destroy();
+                conn = null;
+                ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("hangup");
+                for (final CallbackContext callbackContext : callbackContexts) {
+                    CordovaPlugin.cordova.getThreadPool().execute(new Runnable() {
+                        public void run() {
+                            PluginResult result = new PluginResult(PluginResult.Status.OK, "hangup event called successfully");
+                            result.setKeepCallback(true);
+                            callbackContext.sendPluginResult(result);
+                        }
+                    });
+                }
             }
-
         };
         connection.setAddress(Uri.parse(request.getExtras().getString("to")), TelecomManager.PRESENTATION_ALLOWED);
         conn = connection;

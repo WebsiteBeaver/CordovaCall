@@ -7,6 +7,7 @@ import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 
 import android.os.Bundle;
+import android.telecom.DisconnectCause;
 import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
@@ -28,6 +29,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class echoes a string called from JavaScript.
@@ -44,10 +47,10 @@ public class CordovaCall extends CordovaPlugin {
     private String appName;
     private String from;
     private String to;
-    private static ArrayList<CallbackContext> callbackContexts = new ArrayList<CallbackContext>();
+    private static HashMap<String, ArrayList<CallbackContext>> callbackContextMap = new HashMap<String, ArrayList<CallbackContext>>();
 
-    public static ArrayList<CallbackContext> getCallbackContexts() {
-        return callbackContexts;
+    public static HashMap<String, ArrayList<CallbackContext>> getCallbackContexts() {
+        return callbackContextMap;
     }
 
     @Override
@@ -59,6 +62,9 @@ public class CordovaCall extends CordovaPlugin {
         phoneAccount = new PhoneAccount.Builder(handle, appName)
                 .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
                 .build();
+        callbackContextMap.put("answer",new ArrayList<CallbackContext>());
+        callbackContextMap.put("reject",new ArrayList<CallbackContext>());
+        callbackContextMap.put("hangup",new ArrayList<CallbackContext>());
     }
 
     @Override
@@ -85,15 +91,41 @@ public class CordovaCall extends CordovaPlugin {
             return true;
         } else if (action.equals("connectCall")) {
             Connection conn = MyConnectionService.getConnection();
-            conn.setActive();
+            if(conn == null) {
+                this.callbackContext.error("No call exists for you to connect");
+            } else if(conn.getState() == Connection.STATE_ACTIVE) {
+                this.callbackContext.error("Your call is already connected");
+            } else {
+                conn.setActive();
+                this.callbackContext.success("Call connected successfully");
+            }
+            return true;
+        } else if (action.equals("endCall")) {
+            Connection conn = MyConnectionService.getConnection();
+            if(conn == null) {
+                this.callbackContext.error("No call exists for you to end");
+            } else {
+                DisconnectCause cause = new DisconnectCause(DisconnectCause.LOCAL);
+                conn.setDisconnected(cause);
+                conn.destroy();
+                MyConnectionService.deinitConnection();
+                ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("hangup");
+                for (final CallbackContext cbContext : callbackContexts) {
+                    CordovaPlugin.cordova.getThreadPool().execute(new Runnable() {
+                        public void run() {
+                            PluginResult result = new PluginResult(PluginResult.Status.OK, "hangup event called successfully");
+                            result.setKeepCallback(true);
+                            cbContext.sendPluginResult(result);
+                        }
+                    });
+                }
+                this.callbackContext.success("Call ended successfully");
+            }
             return true;
         } else if (action.equals("registerEvent")) {
-
-
-            callbackContexts.add(this.callbackContext);
-
-            ArrayList<CallbackContext> abc = CordovaCall.getCallbackContexts();
-            Log.i(TAG,"a" + abc.size());
+            String eventType = args.getString(0);
+            ArrayList<CallbackContext> callbackContextList = callbackContextMap.get(eventType);
+            callbackContextList.add(this.callbackContext);
             return true;
         }
         return false;
@@ -121,7 +153,6 @@ public class CordovaCall extends CordovaPlugin {
     }
 
     private void makeCall() {
-        Log.i(TAG,to);
         Uri uri = Uri.fromParts("tel", to, null);
         Bundle callInfoBundle = new Bundle();
         callInfoBundle.putString("to",to);
@@ -138,8 +169,7 @@ public class CordovaCall extends CordovaPlugin {
       return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
     }
 
-    protected void getCallPhonePermission()
-    {
+    protected void getCallPhonePermission() {
         cordova.requestPermission(this, CALL_PHONE_REQ_CODE, Manifest.permission.CALL_PHONE);
     }
 

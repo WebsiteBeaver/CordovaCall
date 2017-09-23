@@ -30,12 +30,15 @@ exports.connectCall = function(success, error) {
     exec(success, error, "CordovaCall", "connectCall", []);
 };
 
+exports.endCall = function(success, error) {
+    exec(success, error, "CordovaCall", "endCall", []);
+};
+
 exports.on = function(e, f) {
     var success = function(message) {
-      console.log('hello world');
       f(message);
     };
     var error = function() {
     };
-    exec(success, error, "CordovaCall", "registerEvent", []);
+    exec(success, error, "CordovaCall", "registerEvent", [e]);
 };
