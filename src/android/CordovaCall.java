@@ -21,6 +21,8 @@ import android.net.Uri;
 import android.Manifest;
 import android.telecom.Connection;
 
+import com.example.hello.MainActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,17 +79,37 @@ public class CordovaCall extends CordovaPlugin {
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         this.callbackContext = callbackContext;
         if (action.equals("receiveCall")) {
-            from = args.getString(0);
-            permissionCounter = 2;
-            this.receiveCall();
-            return true;
-        } else if (action.equals("makeCall")) {
-            to = args.getString(0);
-            cordova.getThreadPool().execute(new Runnable() {
-                public void run() {
-                    getCallPhonePermission();
+            Connection conn = MyConnectionService.getConnection();
+            if(conn != null) {
+                if(conn.getState() == Connection.STATE_ACTIVE) {
+                    this.callbackContext.error("You can't receive a call right now because you're already in a call");
+                } else {
+                    this.callbackContext.error("You can't receive a call right now");
                 }
-            });
+            } else {
+                from = args.getString(0);
+                permissionCounter = 2;
+                this.receiveCall();
+            }
+            return true;
+        } else if (action.equals("sendCall")) {
+            Connection conn = MyConnectionService.getConnection();
+            if(conn != null) {
+                if(conn.getState() == Connection.STATE_ACTIVE) {
+                    this.callbackContext.error("You can't make a call right now because you're already in a call");
+                } else if(conn.getState() == Connection.STATE_DIALING) {
+                    this.callbackContext.error("You can't make a call right now because you're already trying to make a call");
+                } else {
+                    this.callbackContext.error("You can't make a call right now");
+                }
+            } else {
+                to = args.getString(0);
+                cordova.getThreadPool().execute(new Runnable() {
+                    public void run() {
+                        getCallPhonePermission();
+                    }
+                });
+            }
             return true;
         } else if (action.equals("connectCall")) {
             Connection conn = MyConnectionService.getConnection();
@@ -97,6 +119,9 @@ public class CordovaCall extends CordovaPlugin {
                 this.callbackContext.error("Your call is already connected");
             } else {
                 conn.setActive();
+                Intent intent = new Intent(this.cordova.getActivity().getApplicationContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                this.cordova.getActivity().getApplicationContext().startActivity(intent);
                 this.callbackContext.success("Call connected successfully");
             }
             return true;
@@ -143,7 +168,7 @@ public class CordovaCall extends CordovaPlugin {
               if(permissionCounter == 2) {
                 tm.registerPhoneAccount(phoneAccount);
                 Intent phoneIntent = new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS);
-                  this.cordova.getActivity().getApplicationContext().startActivity(phoneIntent);
+                this.cordova.getActivity().getApplicationContext().startActivity(phoneIntent);
               } else {
                 this.callbackContext.error("You need to accept phone account permissions in order to receive calls");
               }
@@ -152,7 +177,7 @@ public class CordovaCall extends CordovaPlugin {
         permissionCounter--;
     }
 
-    private void makeCall() {
+    private void sendCall() {
         Uri uri = Uri.fromParts("tel", to, null);
         Bundle callInfoBundle = new Bundle();
         callInfoBundle.putString("to",to);
@@ -187,7 +212,7 @@ public class CordovaCall extends CordovaPlugin {
         switch(requestCode)
         {
             case CALL_PHONE_REQ_CODE:
-                this.makeCall();
+                this.sendCall();
                 break;
         }
     }

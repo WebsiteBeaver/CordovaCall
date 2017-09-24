@@ -22,8 +22,8 @@ exports.receiveCall = function(from, success, error) {
     exec(success, error, "CordovaCall", "receiveCall", [from]);
 };
 
-exports.makeCall = function(to, success, error) {
-    exec(success, error, "CordovaCall", "makeCall", [to]);
+exports.sendCall = function(to, success, error) {
+    exec(success, error, "CordovaCall", "sendCall", [to]);
 };
 
 exports.connectCall = function(success, error) {

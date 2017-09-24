@@ -6,6 +6,8 @@ import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.telecom.Connection;
 import android.telecom.ConnectionRequest;
 import android.telecom.ConnectionService;
@@ -15,6 +17,8 @@ import android.telecom.TelecomManager;
 import android.util.Log;
 import android.os.Handler;
 import android.net.Uri;
+
+import com.example.hello.MainActivity;
 
 import java.util.Collection;
 import java.util.ArrayList;
@@ -38,6 +42,10 @@ public class MyConnectionService extends ConnectionService {
         final Connection connection = new Connection() {
             @Override
             public void onAnswer() {
+                this.setActive();
+                Intent intent = new Intent(CordovaCall.cordova.getActivity().getApplicationContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                CordovaCall.cordova.getActivity().getApplicationContext().startActivity(intent);
                 ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("answer");
                 for (final CallbackContext callbackContext : callbackContexts) {
                     CordovaPlugin.cordova.getThreadPool().execute(new Runnable() {

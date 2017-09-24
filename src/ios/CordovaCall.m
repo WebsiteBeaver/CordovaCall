@@ -64,7 +64,7 @@
     NSArray* supportedHandleTypes = [command.arguments objectAtIndex:5];
     NSString* video = [command.arguments objectAtIndex:6];
     NSString* includeInRecents = [command.arguments objectAtIndex:7];
-    
+
     CXProviderConfiguration *providerConfiguration;
     if(appName != (id)[NSNull null] && appName.length != 0) {
         providerConfiguration = [[CXProviderConfiguration alloc] initWithLocalizedName:appName];
@@ -110,9 +110,9 @@
             providerConfiguration.includesCallsInRecents = includesCallsInRecents;
         }
     }
-    
+
     self.provider.configuration = providerConfiguration;
-    
+
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -121,16 +121,16 @@
     CDVPluginResult* pluginResult = nil;
     NSString* callUUIDString = [command.arguments objectAtIndex:0];
     NSUUID *callUUID = [[NSUUID alloc] init];
-    
+
     CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
     CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:@"1234567890"];
     callUpdate.remoteHandle = handle;
     callUpdate.hasVideo = YES;
-    
+
     [self.provider reportNewIncomingCallWithUUID:callUUID update:callUpdate completion:^(NSError * _Nullable error) {
         NSLog(@"%@",[error localizedDescription]);
     }];
-    
+
     NSMutableDictionary *callObj = [NSMutableDictionary dictionary];
     [callObj setObject: callUUIDString forKey: @"uuid"];
     [callObj setObject: @YES forKey: @"isOutgoing"];
@@ -172,15 +172,15 @@
     CDVPluginResult* pluginResult = nil;
     NSString* callUUIDString = [command.arguments objectAtIndex:0];
     NSUUID *callUUID = [[NSUUID alloc] initWithUUIDString:callUUIDString];
-    
+
     if (callUUIDString != nil && [callUUIDString length] > 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:callUUIDString];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
-    
+
     [self.provider reportOutgoingCallWithUUID:callUUID connectedAtDate:nil];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -189,15 +189,15 @@
     CDVPluginResult* pluginResult = nil;
     NSString* callUUIDString = [command.arguments objectAtIndex:0];
     NSUUID *callUUID = [[NSUUID alloc] initWithUUIDString:callUUIDString];
-    
+
     if (callUUIDString != nil && [callUUIDString length] > 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:callUUIDString];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
-    
+
     [self.provider reportCallWithUUID:callUUID endedAtDate:nil reason:CXCallEndedReasonRemoteEnded];
-    
+
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -206,7 +206,7 @@
     CDVPluginResult* pluginResult = nil;
     NSString* callUUIDString = [command.arguments objectAtIndex:0];
     //NSUUID *callUUID = [[NSUUID alloc] initWithUUIDString:callUUIDString];
-    
+
     NSMutableArray *calls = [[NSMutableArray alloc] init];
     for (CXCall* call in self.callController.callObserver.calls) {
         NSMutableDictionary *callObj = [NSMutableDictionary dictionary];
@@ -217,13 +217,13 @@
         [callObj setObject: @(call.isOnHold) forKey: @"isOnHold"];
         [calls addObject:callObj];
     }
-    
+
     if (callUUIDString != nil && [callUUIDString length] > 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:calls];
     } else {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
-    
+
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
