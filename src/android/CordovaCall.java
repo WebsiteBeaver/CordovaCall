@@ -50,13 +50,19 @@ public class CordovaCall extends CordovaPlugin {
     private String from;
     private String to;
     private static HashMap<String, ArrayList<CallbackContext>> callbackContextMap = new HashMap<String, ArrayList<CallbackContext>>();
+    private static CordovaInterface cordovaInterface;
 
     public static HashMap<String, ArrayList<CallbackContext>> getCallbackContexts() {
         return callbackContextMap;
     }
 
+    public static CordovaInterface getCordova() {
+        return cordovaInterface;
+    }
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        cordovaInterface = cordova;
         super.initialize(cordova, webView);
         appName = getApplicationName(this.cordova.getActivity().getApplicationContext());
         handle = new PhoneAccountHandle(new ComponentName(this.cordova.getActivity().getApplicationContext(),MyConnectionService.class),appName);
@@ -67,6 +73,8 @@ public class CordovaCall extends CordovaPlugin {
         callbackContextMap.put("answer",new ArrayList<CallbackContext>());
         callbackContextMap.put("reject",new ArrayList<CallbackContext>());
         callbackContextMap.put("hangup",new ArrayList<CallbackContext>());
+        callbackContextMap.put("sendCall",new ArrayList<CallbackContext>());
+        callbackContextMap.put("receiveCall",new ArrayList<CallbackContext>());
     }
 
     @Override
@@ -136,7 +144,7 @@ public class CordovaCall extends CordovaPlugin {
                 MyConnectionService.deinitConnection();
                 ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("hangup");
                 for (final CallbackContext cbContext : callbackContexts) {
-                    CordovaPlugin.cordova.getThreadPool().execute(new Runnable() {
+                    cordova.getThreadPool().execute(new Runnable() {
                         public void run() {
                             PluginResult result = new PluginResult(PluginResult.Status.OK, "hangup event called successfully");
                             result.setKeepCallback(true);
@@ -184,6 +192,7 @@ public class CordovaCall extends CordovaPlugin {
         Bundle callInfo = new Bundle();
         callInfo.putParcelable(TelecomManager.EXTRA_OUTGOING_CALL_EXTRAS,callInfoBundle);
         callInfo.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handle);
+        callInfo.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, true);
         tm.placeCall(uri, callInfo);
         this.callbackContext.success("Outgoing call successful");
     }

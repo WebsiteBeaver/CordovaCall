@@ -18,6 +18,10 @@ exports.getConfig = function(success, error) {
 
 //methods start here
 
+exports.setAppName = function(appname, success, error) {
+    exec(success, error, "CordovaCall", "setAppName", [appname]);
+};
+
 exports.receiveCall = function(from, success, error) {
     exec(success, error, "CordovaCall", "receiveCall", [from]);
 };
