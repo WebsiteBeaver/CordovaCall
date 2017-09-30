@@ -5,41 +5,26 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
-
 import android.os.Bundle;
 import android.telecom.DisconnectCause;
 import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
-import android.telecom.StatusHints;
 import android.telecom.TelecomManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
 import android.net.Uri;
 import android.Manifest;
 import android.telecom.Connection;
-
-import com.example.hello.MainActivity;
-import com.example.hello.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.HashMap;
-import java.util.Map;
 import android.graphics.drawable.Icon;
+import android.util.Log;
 
-/**
- * This class echoes a string called from JavaScript.
- */
 public class CordovaCall extends CordovaPlugin {
 
     private static String TAG = "CordovaCall";
@@ -135,7 +120,7 @@ public class CordovaCall extends CordovaPlugin {
                 this.callbackContext.error("Your call is already connected");
             } else {
                 conn.setActive();
-                Intent intent = new Intent(this.cordova.getActivity().getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(this.cordova.getActivity().getApplicationContext(), this.cordova.getActivity().getClass());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 this.cordova.getActivity().getApplicationContext().startActivity(intent);
                 this.callbackContext.success("Call connected successfully");
@@ -177,7 +162,8 @@ public class CordovaCall extends CordovaPlugin {
             this.callbackContext.success("App Name Changed Successfully");
             return true;
         } else if (action.equals("setIcon")) {
-            icon = Icon.createWithResource(this.cordova.getActivity(), R.drawable.fb_icon);
+            String iconName = args.getString(0);
+            icon = Icon.createWithResource(this.cordova.getActivity(), this.cordova.getActivity().getApplicationContext().getResources().getIdentifier(iconName, "drawable", this.cordova.getActivity().getPackageName()));
             this.callbackContext.success("Icon Changed Successfully");
             return true;
         }

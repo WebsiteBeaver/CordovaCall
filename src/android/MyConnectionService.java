@@ -1,12 +1,7 @@
 package com.dmarc.cordovacall;
 
-import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
-
-import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
@@ -17,17 +12,10 @@ import android.telecom.DisconnectCause;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.StatusHints;
 import android.telecom.TelecomManager;
-import android.telecom.VideoProfile;
-import android.util.Log;
 import android.os.Handler;
 import android.net.Uri;
-
-import com.example.hello.MainActivity;
-import com.example.hello.R;
-
-import java.util.Collection;
 import java.util.ArrayList;
-
+import android.util.Log;
 
 public class MyConnectionService extends ConnectionService {
 
@@ -48,7 +36,7 @@ public class MyConnectionService extends ConnectionService {
             @Override
             public void onAnswer() {
                 this.setActive();
-                Intent intent = new Intent(CordovaCall.getCordova().getActivity().getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(CordovaCall.getCordova().getActivity().getApplicationContext(), CordovaCall.getCordova().getActivity().getClass());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 CordovaCall.getCordova().getActivity().getApplicationContext().startActivity(intent);
                 ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("answer");
@@ -110,7 +98,6 @@ public class MyConnectionService extends ConnectionService {
             StatusHints statusHints = new StatusHints((CharSequence)"", icon, new Bundle());
             connection.setStatusHints(statusHints);
         }
-        //connection.setCallerDisplayName(request.getExtras().getString("from"), TelecomManager.PRESENTATION_ALLOWED);
         conn = connection;
         ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("receiveCall");
         for (final CallbackContext callbackContext : callbackContexts) {
@@ -168,7 +155,7 @@ public class MyConnectionService extends ConnectionService {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(CordovaCall.getCordova().getActivity().getApplicationContext(), MainActivity.class);
+                        Intent intent = new Intent(CordovaCall.getCordova().getActivity().getApplicationContext(), CordovaCall.getCordova().getActivity().getClass());
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         CordovaCall.getCordova().getActivity().getApplicationContext().startActivity(intent);
                     }
@@ -182,7 +169,6 @@ public class MyConnectionService extends ConnectionService {
             StatusHints statusHints = new StatusHints((CharSequence)"", icon, new Bundle());
             connection.setStatusHints(statusHints);
         }
-        //connection.setCallerDisplayName(request.getExtras().getString("to"), TelecomManager.PRESENTATION_ALLOWED);
         connection.setDialing();
         conn = connection;
         ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("sendCall");
@@ -197,15 +183,6 @@ public class MyConnectionService extends ConnectionService {
                 });
             }
         }
-        // final Handler handler = new Handler();
-        // handler.postDelayed(new Runnable() {
-        //     @Override
-        //     public void run() {
-        //         Intent intent = new Intent(CordovaCall.getCordova().getActivity().getApplicationContext(), MainActivity.class);
-        //         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        //         CordovaCall.getCordova().getActivity().getApplicationContext().startActivity(intent);
-        //     }
-        // }, 800);
         return connection;
     }
 }
