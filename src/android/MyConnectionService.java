@@ -8,12 +8,14 @@ import org.apache.cordova.PluginResult;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.telecom.Connection;
 import android.telecom.ConnectionRequest;
 import android.telecom.ConnectionService;
 import android.telecom.DisconnectCause;
 import android.telecom.PhoneAccountHandle;
+import android.telecom.StatusHints;
 import android.telecom.TelecomManager;
 import android.telecom.VideoProfile;
 import android.util.Log;
@@ -21,6 +23,7 @@ import android.os.Handler;
 import android.net.Uri;
 
 import com.example.hello.MainActivity;
+import com.example.hello.R;
 
 import java.util.Collection;
 import java.util.ArrayList;
@@ -102,6 +105,11 @@ public class MyConnectionService extends ConnectionService {
             }
         };
         connection.setAddress(Uri.parse(request.getExtras().getString("from")), TelecomManager.PRESENTATION_ALLOWED);
+        Icon icon = CordovaCall.getIcon();
+        if(icon != null) {
+            StatusHints statusHints = new StatusHints((CharSequence)"", icon, new Bundle());
+            connection.setStatusHints(statusHints);
+        }
         //connection.setCallerDisplayName(request.getExtras().getString("from"), TelecomManager.PRESENTATION_ALLOWED);
         conn = connection;
         ArrayList<CallbackContext> callbackContexts = CordovaCall.getCallbackContexts().get("receiveCall");
@@ -169,6 +177,11 @@ public class MyConnectionService extends ConnectionService {
             }
         };
         connection.setAddress(Uri.parse(request.getExtras().getString("to")), TelecomManager.PRESENTATION_ALLOWED);
+        Icon icon = CordovaCall.getIcon();
+        if(icon != null) {
+            StatusHints statusHints = new StatusHints((CharSequence)"", icon, new Bundle());
+            connection.setStatusHints(statusHints);
+        }
         //connection.setCallerDisplayName(request.getExtras().getString("to"), TelecomManager.PRESENTATION_ALLOWED);
         connection.setDialing();
         conn = connection;

@@ -22,6 +22,10 @@ exports.setAppName = function(appname, success, error) {
     exec(success, error, "CordovaCall", "setAppName", [appname]);
 };
 
+exports.setIcon = function(icon, success, error) {
+    exec(success, error, "CordovaCall", "setIcon", [icon]);
+};
+
 exports.receiveCall = function(from, success, error) {
     exec(success, error, "CordovaCall", "receiveCall", [from]);
 };

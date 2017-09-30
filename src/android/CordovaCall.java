@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.telecom.DisconnectCause;
 import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
+import android.telecom.StatusHints;
 import android.telecom.TelecomManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.Manifest;
 import android.telecom.Connection;
 
 import com.example.hello.MainActivity;
+import com.example.hello.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import android.graphics.drawable.Icon;
 
 /**
  * This class echoes a string called from JavaScript.
@@ -51,6 +54,7 @@ public class CordovaCall extends CordovaPlugin {
     private String to;
     private static HashMap<String, ArrayList<CallbackContext>> callbackContextMap = new HashMap<String, ArrayList<CallbackContext>>();
     private static CordovaInterface cordovaInterface;
+    private static Icon icon;
 
     public static HashMap<String, ArrayList<CallbackContext>> getCallbackContexts() {
         return callbackContextMap;
@@ -58,6 +62,10 @@ public class CordovaCall extends CordovaPlugin {
 
     public static CordovaInterface getCordova() {
         return cordovaInterface;
+    }
+
+    public static Icon getIcon() {
+        return icon;
     }
 
     @Override
@@ -159,6 +167,18 @@ public class CordovaCall extends CordovaPlugin {
             String eventType = args.getString(0);
             ArrayList<CallbackContext> callbackContextList = callbackContextMap.get(eventType);
             callbackContextList.add(this.callbackContext);
+            return true;
+        } else if (action.equals("setAppName")) {
+            String appName = args.getString(0);
+            handle = new PhoneAccountHandle(new ComponentName(this.cordova.getActivity().getApplicationContext(),MyConnectionService.class),appName);
+            phoneAccount = new PhoneAccount.Builder(handle, appName)
+                  .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
+                  .build();
+            this.callbackContext.success("App Name Changed Successfully");
+            return true;
+        } else if (action.equals("setIcon")) {
+            icon = Icon.createWithResource(this.cordova.getActivity(), R.drawable.fb_icon);
+            this.callbackContext.success("Icon Changed Successfully");
             return true;
         }
         return false;
