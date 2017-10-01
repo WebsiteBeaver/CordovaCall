@@ -163,8 +163,13 @@ public class CordovaCall extends CordovaPlugin {
             return true;
         } else if (action.equals("setIcon")) {
             String iconName = args.getString(0);
-            icon = Icon.createWithResource(this.cordova.getActivity(), this.cordova.getActivity().getApplicationContext().getResources().getIdentifier(iconName, "drawable", this.cordova.getActivity().getPackageName()));
-            this.callbackContext.success("Icon Changed Successfully");
+            int iconId = this.cordova.getActivity().getApplicationContext().getResources().getIdentifier(iconName, "drawable", this.cordova.getActivity().getPackageName());
+            if(iconId != 0) {
+                icon = Icon.createWithResource(this.cordova.getActivity(), iconId);
+                this.callbackContext.success("Icon Changed Successfully");
+            } else {
+                this.callbackContext.error("This icon does not exist. Make sure to add it to the res/drawable folder the right way.");
+            }
             return true;
         }
         return false;
