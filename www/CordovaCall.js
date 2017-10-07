@@ -1,29 +1,23 @@
 var exec = require('cordova/exec');
 
-exports.setConfig = function(config, success, error) {
-    var appName = config.appName;
-    var ringtone = config.ringtone;
-    var icon = config.icon;
-    var maxCallGroups = config.maxCallGroups;
-    var maxCallsPerGroup = config.maxCallsPerGroup;
-    var supportedHandleTypes = config.supportedHandleTypes;
-    var video = config.video;
-    var includeInRecents = config.includeInRecents;
-    exec(success, error, "CordovaCall", "setConfig", [appName, ringtone, icon, maxCallGroups, maxCallsPerGroup, supportedHandleTypes, video, includeInRecents]);
+exports.setAppName = function(appName, success, error) {
+    exec(success, error, "CordovaCall", "setAppName", [appName]);
 };
 
-exports.getConfig = function(success, error) {
-    exec(success, error, "CordovaCall", "getConfig", []);
+exports.setIcon = function(iconName, success, error) {
+    exec(success, error, "CordovaCall", "setIcon", [iconName]);
 };
 
-//methods start here
-
-exports.setAppName = function(appname, success, error) {
-    exec(success, error, "CordovaCall", "setAppName", [appname]);
+exports.setRingtone = function(ringtoneName, success, error) {
+    exec(success, error, "CordovaCall", "setRingtone", [ringtoneName]);
 };
 
-exports.setIcon = function(icon, success, error) {
-    exec(success, error, "CordovaCall", "setIcon", [icon]);
+exports.setIncludeInRecents = function(value, success, error) {
+    if(typeof value == "boolean") {
+      exec(success, error, "CordovaCall", "setIncludeInRecents", [value]);
+    } else {
+      error("Value Must Be True Or False");
+    }
 };
 
 exports.receiveCall = function(from, success, error) {
