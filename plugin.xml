@@ -33,6 +33,7 @@
         <param name="onload" value="true" />
       </feature>
     </config-file>
+    <source-file src="src/ios/AppDelegateCordovaCall.m" />
     <source-file src="src/ios/CordovaCall.m" />
   </platform>
 </plugin>

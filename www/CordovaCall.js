@@ -20,6 +20,14 @@ exports.setIncludeInRecents = function(value, success, error) {
     }
 };
 
+exports.setVideo = function(value, success, error) {
+    if(typeof value == "boolean") {
+      exec(success, error, "CordovaCall", "setVideo", [value]);
+    } else {
+      error("Value Must Be True Or False");
+    }
+};
+
 exports.receiveCall = function(from, success, error) {
     exec(success, error, "CordovaCall", "receiveCall", [from]);
 };

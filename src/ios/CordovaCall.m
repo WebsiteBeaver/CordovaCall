@@ -4,7 +4,7 @@ BOOL hasVideo = NO;
 NSString* appName;
 NSString* ringtone;
 NSString* icon;
-BOOL includeInRecents;
+BOOL includeInRecents = NO;
 NSMutableDictionary *callbackIds;
 
 @interface CordovaCall : CDVPlugin <CXProviderDelegate>
@@ -20,6 +20,7 @@ NSMutableDictionary *callbackIds;
     - (void)connectCall:(CDVInvokedUrlCommand*)command;
     - (void)endCall:(CDVInvokedUrlCommand*)command;
     - (void)registerEvent:(CDVInvokedUrlCommand*)command;
+    - (void)receiveCallFromRecents:(NSNotification *) notification;
 @end
 
 @implementation CordovaCall
@@ -48,6 +49,8 @@ NSMutableDictionary *callbackIds;
     [callbackIds setObject:[NSMutableArray array] forKey:@"hangup"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"sendCall"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"receiveCall"];
+    //allows user to make call from recents
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveCallFromRecents:) name:@"RecentsCallNotification" object:nil];
 }
 
 - (void)updateProviderConfig {
@@ -66,11 +69,9 @@ NSMutableDictionary *callbackIds;
     NSMutableSet *handleTypes = [[NSMutableSet alloc] init];
     [handleTypes addObject:@(CXHandleTypeGeneric)];
     providerConfiguration.supportedHandleTypes = handleTypes;
-    providerConfiguration.supportsVideo = YES;
+    providerConfiguration.supportsVideo = hasVideo;
     if (@available(iOS 11.0, *)) {
-        if(includeInRecents != nil) {
-            providerConfiguration.includesCallsInRecents = includeInRecents;
-        }
+        providerConfiguration.includesCallsInRecents = includeInRecents;
     }
 
     self.provider.configuration = providerConfiguration;
@@ -132,6 +133,15 @@ NSMutableDictionary *callbackIds;
     includeInRecents = [[command.arguments objectAtIndex:0] boolValue];
     [self updateProviderConfig];
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"includeInRecents Changed Successfully"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)setVideo:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    hasVideo = [[command.arguments objectAtIndex:0] boolValue];
+    [self updateProviderConfig];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"hasVideo Changed Successfully"];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -236,6 +246,22 @@ NSMutableDictionary *callbackIds;
     if(callbackIds[eventName] != nil) {
         [callbackIds[eventName] addObject:command.callbackId];
     }
+}
+
+- (void) receiveCallFromRecents:(NSNotification *) notification
+{
+    NSString* callUUIDString = notification.object[@"contactName"];
+    NSUUID *callUUID = [[NSUUID alloc] init];
+    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:callUUIDString];
+    CXStartCallAction *startCallAction = [[CXStartCallAction alloc] initWithCallUUID:callUUID handle:handle];
+    startCallAction.video = [notification.object[@"isVideo"] boolValue]?YES:NO;
+    CXTransaction *transaction = [[CXTransaction alloc] initWithAction:startCallAction];
+    [self.callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
+        if (error == nil) {
+        } else {
+            NSLog(@"%@",[error localizedDescription]);
+        }
+    }];
 }
 
 - (void)providerDidReset:(CXProvider *)provider
