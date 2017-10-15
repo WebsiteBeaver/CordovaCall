@@ -19,8 +19,12 @@
         contact = startCallIntent.contacts.firstObject;
     }
     INPersonHandle *personHandle = contact.personHandle;
-    NSString *contactName = personHandle.value;
-    NSDictionary *intentInfo = @{ @"contactName" : contactName, @"isVideo" : isVideo?@YES:@NO};
+    NSString *callId = personHandle.value;
+    NSString *callName = [[NSUserDefaults standardUserDefaults] stringForKey:callId];
+    if(!callName) {
+        callName = callId;
+    }
+    NSDictionary *intentInfo = @{ @"callName" : callName, @"callId" : callId, @"isVideo" : isVideo?@YES:@NO};
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RecentsCallNotification" object:intentInfo];
     return YES;
 }

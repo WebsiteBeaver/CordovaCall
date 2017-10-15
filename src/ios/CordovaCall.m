@@ -147,15 +147,23 @@ NSMutableDictionary *callbackIds;
 
 - (void)receiveCall:(CDVInvokedUrlCommand*)command
 {
+    BOOL hasId = ![[command.arguments objectAtIndex:1] isEqual:[NSNull null]];
     CDVPluginResult* pluginResult = nil;
-    NSString* callUUIDString = [command.arguments objectAtIndex:0];
+    NSString* callName = [command.arguments objectAtIndex:0];
+    NSString* callId = hasId?[command.arguments objectAtIndex:1]:callName;
     NSUUID *callUUID = [[NSUUID alloc] init];
 
-    if (callUUIDString != nil && [callUUIDString length] > 0) {
-        CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:callUUIDString];
+    if (hasId) {
+        [[NSUserDefaults standardUserDefaults] setObject:callName forKey:[command.arguments objectAtIndex:1]];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+
+    if (callName != nil && [callName length] > 0) {
+        CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:callId];
         CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
         callUpdate.remoteHandle = handle;
         callUpdate.hasVideo = hasVideo;
+        callUpdate.localizedCallerName = callName;
 
         [self.provider reportNewIncomingCallWithUUID:callUUID update:callUpdate completion:^(NSError * _Nullable error) {
             if(error == nil) {
@@ -179,13 +187,21 @@ NSMutableDictionary *callbackIds;
 
 - (void)sendCall:(CDVInvokedUrlCommand*)command
 {
+    BOOL hasId = ![[command.arguments objectAtIndex:1] isEqual:[NSNull null]];
     CDVPluginResult* pluginResult = nil;
-    NSString* callUUIDString = [command.arguments objectAtIndex:0];
+    NSString* callName = [command.arguments objectAtIndex:0];
+    NSString* callId = hasId?[command.arguments objectAtIndex:1]:callName;
     NSUUID *callUUID = [[NSUUID alloc] init];
 
-    if (callUUIDString != nil && [callUUIDString length] > 0) {
-        CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:callUUIDString];
+    if (hasId) {
+        [[NSUserDefaults standardUserDefaults] setObject:callName forKey:[command.arguments objectAtIndex:1]];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+
+    if (callName != nil && [callName length] > 0) {
+        CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:callId];
         CXStartCallAction *startCallAction = [[CXStartCallAction alloc] initWithCallUUID:callUUID handle:handle];
+        startCallAction.contactIdentifier = callName;
         startCallAction.video = hasVideo;
         CXTransaction *transaction = [[CXTransaction alloc] initWithAction:startCallAction];
         [self.callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
@@ -250,11 +266,13 @@ NSMutableDictionary *callbackIds;
 
 - (void) receiveCallFromRecents:(NSNotification *) notification
 {
-    NSString* callUUIDString = notification.object[@"contactName"];
+    NSString* callID = notification.object[@"callId"];
+    NSString* callName = notification.object[@"callName"];
     NSUUID *callUUID = [[NSUUID alloc] init];
-    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:callUUIDString];
+    CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:callID];
     CXStartCallAction *startCallAction = [[CXStartCallAction alloc] initWithCallUUID:callUUID handle:handle];
     startCallAction.video = [notification.object[@"isVideo"] boolValue]?YES:NO;
+    startCallAction.contactIdentifier = callName;
     CXTransaction *transaction = [[CXTransaction alloc] initWithAction:startCallAction];
     [self.callController requestTransaction:transaction completion:^(NSError * _Nullable error) {
         if (error == nil) {
@@ -271,11 +289,16 @@ NSMutableDictionary *callbackIds;
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action
 {
-    [self.provider reportOutgoingCallWithUUID:action.callUUID startedConnectingAtDate:nil];
+    CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
+    callUpdate.remoteHandle = action.handle;
+    callUpdate.hasVideo = action.video;
+    callUpdate.localizedCallerName = action.contactIdentifier;
+    [self.provider reportCallWithUUID:action.callUUID updated:callUpdate];
     [action fulfill];
+    NSDictionary *callData = @{@"callName":action.contactIdentifier, @"callId": action.handle.value, @"isVideo": action.video?@YES:@NO, @"message": @"sendCall event called successfully"};
     for (id callbackId in callbackIds[@"sendCall"]) {
         CDVPluginResult* pluginResult = nil;
-        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"sendCall event called successfully"];
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:callData];
         [pluginResult setKeepCallbackAsBool:YES];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
     }

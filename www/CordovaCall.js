@@ -28,12 +28,22 @@ exports.setVideo = function(value, success, error) {
     }
 };
 
-exports.receiveCall = function(from, success, error) {
-    exec(success, error, "CordovaCall", "receiveCall", [from]);
+exports.receiveCall = function(from, id, success, error) {
+    if(typeof id == "function") {
+      error = success;
+      success = id;
+      id = undefined;
+    }
+    exec(success, error, "CordovaCall", "receiveCall", [from, id]);
 };
 
-exports.sendCall = function(to, success, error) {
-    exec(success, error, "CordovaCall", "sendCall", [to]);
+exports.sendCall = function(to, id, success, error) {
+    if(typeof id == "function") {
+      error = success;
+      success = id;
+      id = undefined;
+    }
+    exec(success, error, "CordovaCall", "sendCall", [to, id]);
 };
 
 exports.connectCall = function(success, error) {
