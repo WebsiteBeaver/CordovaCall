@@ -1,12 +1,12 @@
 # Cordova Call
 
 - [Install](#install)
-  - [Info.plist](#info.plist)
+  - [Info.plist](#infoplist)
 - [Examples](#examples)
   - [Receive A Phone Call](#receive-a-phone-call)
   - [Send A Phone Call](#send-a-phone-call)
-  - [Make A Call From Recents](#send-a-phone-call)
-  - [Use A Title Different Than App Name](#user-a-title-different-than-app-name)
+  - [Make A Call From Recents](#make-a-call-from-recents)
+  - [Use A Title Different Than App Name](#use-a-title-different-than-app-name)
   - [Use Your Custom Logo](#use-your-custom-logo)
   - [Make It Say Video Instead Of Audio](#make-it-say-video-instead-of-audio)
   - [Change The Ringtone](#change-the-ringtone)
@@ -22,14 +22,13 @@
     - [setRingtone](#setringtone)
     - [setIncludeInRecents](#setincludeinrecents)
   - [Events](#events)
-    - [onAnswer](#on-answer)
-    - [onHangup](#on-hangup)
-    - [onReject](#on-reject)
-    - [onSendCall](#on-sendcall)
-    - [onReceiveCall](#on-receivecall)
+    - [onAnswer](#onanswer)
+    - [onHangup](#onhangup)
+    - [onReject](#onreject)
+    - [onSendCall](#onsendcall)
+    - [onReceiveCall](#onreceivecall)
 - [About](#about)
   - [Built With](#built-with)
-  - [Author](#author)
   - [License](#license)
 
 # Install
@@ -391,10 +390,6 @@ Use this Cordova plugin to make your VOIP (audio and video calling) apps feel mo
 * [Cordova](https://cordova.apache.org/) - Allows you to write JavaScript in order to make apps for iOS, Android, etc.
 * [CallKit](https://developer.apple.com/documentation/callkit) - iOS Framework that allows your app to access the native call UI
 * [ConnectionService](https://developer.android.com/reference/android/telecom/ConnectionService.html) - Android class that allows your app to access the native call UI
-
-## Author
-
-* [David Marcus](https://github.com/dmarcs)
 
 ## License
 MIT License
