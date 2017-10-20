@@ -1,6 +1,6 @@
 {
   "name": "cordova-call",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cordova plugin that lets you use iOS CallKit UI and Android ConnectionService UI",
   "cordova": {
     "id": "com.dmarc.cordovacall",
