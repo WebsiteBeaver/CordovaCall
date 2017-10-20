@@ -33,6 +33,8 @@ exports.receiveCall = function(from, id, success, error) {
       error = success;
       success = id;
       id = undefined;
+    } else if(id) {
+      id = id.toString();
     }
     exec(success, error, "CordovaCall", "receiveCall", [from, id]);
 };
@@ -42,6 +44,8 @@ exports.sendCall = function(to, id, success, error) {
       error = success;
       success = id;
       id = undefined;
+    } else if(id) {
+      id = id.toString();
     }
     exec(success, error, "CordovaCall", "sendCall", [to, id]);
 };
