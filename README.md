@@ -85,7 +85,7 @@ You'll see a screen that shows that your call is being connected as show below:
 
 After 5 seconds pass, you'll notice that the screen changes because of the [`connectCall`](#connectcall) function:
 
-<img alt="CordovaCall Connect Call iOS CallKit" src="https://user-images.githubusercontent.com/26162804/31644299-821783d8-b2c3-11e7-97ae-a13d7e67fb31.png" height="600" /> <img alt="CordovaCall Connect Call Android ConnectionService" src="https://user-images.githubusercontent.com/26162804/31644024-c54ff312-b2c1-11e7-9410-c584e121bbdc.png" height="600" />
+<img alt="CordovaCall Connect Call iOS CallKit" src="https://user-images.githubusercontent.com/26162804/31801720-114b589e-b518-11e7-8510-4c978548e30d.png" height="600" /> <img alt="CordovaCall Connect Call Android ConnectionService" src="https://user-images.githubusercontent.com/26162804/31644024-c54ff312-b2c1-11e7-9410-c584e121bbdc.png" height="600" />
 
 If you're using WebRTC, you might call `pc.createOffer` in the success callback of [`sendCall`](#sendcall). The best place to call [`connectCall`](#connectcall) is in `pc.onaddstream`.
 
