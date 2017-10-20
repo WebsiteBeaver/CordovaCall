@@ -50,6 +50,19 @@ This step is important. The plugin won't work on iOS unless you open up your `.x
 
 Once you install the CordovaCall plugin, it's very easy to get started. Take a look at some of these examples to get a feel for using this plugin. Note that you should place the functions below in `onDeviceReady` as specified in the [Cordova docs](https://cordova.apache.org/docs/en/4.0.0/cordova/events/events.deviceready.html). The screenshots used in these examples show iOS 11 on an iPhone 7 (left) and Android Oreo on a Google Pixel (right). Because CallKit doesn't work on the simulator, you'll need to run this plugin on an actual iOS device (iOS 10 or greater). The one exception is the [`sendCall`](#sendcall) function which works on the simulator. CordovaCall works well on the Android Emulator (assuming you have Marshmallow or greater). These examples are meant to be simple, but make sure that in production you call functions within the callbacks to ensure that one finishes before you start another.
 
+```
+//Vanilla JavaScript
+document.addEventListener("deviceready", onDeviceReady, false);
+function onDeviceReady() {
+	console.log('cordova.plugins.CordovaCall is now available');
+}
+
+//jQuery-like (ex: DOM7)
+$$(document).on('deviceready', function() {
+	console.log('cordova.plugins.CordovaCall is now available');
+}
+```
+
 ## Receive A Phone Call
 
 ```
