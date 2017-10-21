@@ -27,7 +27,7 @@
     - [onReject](#onreject)
     - [onSendCall](#onsendcall)
     - [onReceiveCall](#onreceivecall)
-- [Common Errors](#commonerrors)
+- [Common Errors](#common-errors)
   - [Info.plist](#infoplist)
 - [About](#about)
   - [Built With](#built-with)
