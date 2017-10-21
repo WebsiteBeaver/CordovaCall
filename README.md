@@ -27,6 +27,8 @@
     - [onReject](#onreject)
     - [onSendCall](#onsendcall)
     - [onReceiveCall](#onreceivecall)
+- [Common Errors](#commonerrors)
+  - [Info.plist](#infoplist)
 - [About](#about)
   - [Built With](#built-with)
   - [License](#license)
@@ -37,18 +39,9 @@ Add the CordovaCall plugin to your Cordova project
 
 `cordova plugin add cordova-call`
 
-## Info.plist
-
-This step is important. The plugin won't work on iOS unless you open up your `.xcworkspace` file in Xcode, and modify the Info.plist file. You need to add two keys.
-
-1. `Required background modes` with type `Array` and value `App provides Voice over IP services`.
-2. `NSUserActivityTypes` with type `Array` and two items with type `String`: `INStartAudioCallIntent` and `INStartVideoCallIntent`
-
-<img alt="Info.plist" src="https://user-images.githubusercontent.com/26162804/31591863-ceb7d3a0-b1f1-11e7-9677-c58711f8f95e.png" width="600" />
-
 # Examples
 
-Once you install the CordovaCall plugin, it's very easy to get started. Take a look at some of these examples to get a feel for using this plugin. Note that you should place the functions below in `onDeviceReady` as specified in the [Cordova docs](https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready). The screenshots used in these examples show iOS 11 on an iPhone 7 (left) and Android Oreo on a Google Pixel (right). Because CallKit doesn't work on the simulator, you'll need to run this plugin on an actual iOS device (iOS 10 or greater). The one exception is the [`sendCall`](#sendcall) function which works on the simulator. CordovaCall works well on the Android Emulator (assuming you have Marshmallow or greater). These examples are meant to be simple, but make sure that in production you call functions within the callbacks to ensure that one finishes before you start another.
+Once you install the CordovaCall plugin, it's very easy to get started. Take a look at some of these examples to get a feel for using this plugin. Note that you should place the functions in `onDeviceReady` as specified in the [Cordova docs](https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready). The screenshots used in these examples show iOS 11 on an iPhone 7 (left) and Android Oreo on a Google Pixel (right). Because CallKit doesn't work on the simulator, you'll need to run this plugin on an actual iOS device (iOS 10 or greater). The one exception is the [`sendCall`](#sendcall) function which works on the simulator. CordovaCall works well on the Android Emulator (assuming you have Marshmallow or greater). These examples are meant to be simple, but make sure that in production you call functions within the callbacks to ensure that one finishes before you start another.
 
 ```
 //Vanilla JavaScript
@@ -393,6 +386,17 @@ cordova.plugins.CordovaCall.on('sendCall', handler);
 - **handler**  
 Type: *Function*   
 A user-defined function that gets executed when you send a call. You can use the data that gets returned in the handler to access the user id that corresponds to the callee's name. This is very useful if you make a call from recents, and need to get the call information.
+
+# Common Errors
+
+## Info.plist
+
+If you get an error that says `The operation couldn’t be completed. (com.apple.CallKit.error.requesttransaction error 1.)`, open up your `.xcworkspace` file in Xcode, and modify the Info.plist file. You need to add two keys. These keys should already be in your Info.plist because they get added when you install CordovaCall, but you might have deleted them.
+
+1. `Required background modes` with type `Array` and value `App provides Voice over IP services`.
+2. `NSUserActivityTypes` with type `Array` and two items with type `String`: `INStartAudioCallIntent` and `INStartVideoCallIntent`
+
+<img alt="Info.plist" src="https://user-images.githubusercontent.com/26162804/31591863-ceb7d3a0-b1f1-11e7-9677-c58711f8f95e.png" width="600" />
 
 # About
 
