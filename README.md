@@ -1,7 +1,6 @@
 # Cordova Call
 
 - [Install](#install)
-  - [Info.plist](#infoplist)
 - [Examples](#examples)
   - [Receive A Phone Call](#receive-a-phone-call)
   - [Send A Phone Call](#send-a-phone-call)
