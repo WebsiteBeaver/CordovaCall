@@ -15,6 +15,7 @@
     - [sendCall](#sendcall)
     - [connectCall](#connectcall)
     - [endCall](#endcall)
+  - [Options](#options)
     - [setAppName](#setappname)
     - [setIcon](#seticon)
     - [setVideo](#setvideo)
@@ -42,12 +43,11 @@ Add the CordovaCall plugin to your Cordova project
 
 Once you install the CordovaCall plugin, it's very easy to get started. Take a look at some of these examples to get a feel for using this plugin. Note that you should place the functions in `onDeviceReady` as specified in the [Cordova docs](https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready). The screenshots used in these examples show iOS 11 on an iPhone 7 (left) and Android Oreo on a Google Pixel (right). Because CallKit doesn't work on the simulator, you'll need to run this plugin on an actual iOS device (iOS 10 or greater). The one exception is the [`sendCall`](#sendcall) function which works on the simulator. CordovaCall works well on the Android Emulator (assuming you have Marshmallow or greater). These examples are meant to be simple, but make sure that in production you call functions within the callbacks to ensure that one finishes before you start another.
 
-```
+```javascript
 //Vanilla JavaScript
-document.addEventListener("deviceready", onDeviceReady, false);
-function onDeviceReady() {
+document.addEventListener('deviceready', function() {
   console.log('cordova.plugins.CordovaCall is now available');
-}
+}, false);
 
 //jQuery-like (ex: DOM7)
 $$(document).on('deviceready', function() {
@@ -249,6 +249,8 @@ A callback that gets executed if the call ends successfully
 - **error**  
 Type: *Function*   
 A callback that gets executed if the call fails to end
+
+## Options
 
 ### setAppName
 ```
