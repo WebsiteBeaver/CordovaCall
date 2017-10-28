@@ -47,13 +47,13 @@ Once you install the CordovaCall plugin, it's very easy to get started. Take a l
 //Vanilla JavaScript
 document.addEventListener('deviceready', function() {
   console.log('cordova.plugins.CordovaCall is now available');
-	var cordovaCall = cordova.plugins.CordovaCall; //not necessary, but might be more convenient 
+  var cordovaCall = cordova.plugins.CordovaCall; //not necessary, but might be more convenient 
 }, false);
 
 //jQuery-like (ex: DOM7)
 $$(document).on('deviceready', function() {
   console.log('cordova.plugins.CordovaCall is now available');
-	var cordovaCall = cordova.plugins.CordovaCall;
+  var cordovaCall = cordova.plugins.CordovaCall;
 });
 ```
 
