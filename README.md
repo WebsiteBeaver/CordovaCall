@@ -368,6 +368,8 @@ A user-defined function that gets executed when you hangup a call
 cordova.plugins.CordovaCall.on('reject', handler);
 ```
 
+_Support: iOS 10+ and Android Marshmallow+_   
+
 - **handler**  
 Type: *Function*   
 A user-defined function that gets executed when you reject an incoming call
@@ -377,6 +379,8 @@ A user-defined function that gets executed when you reject an incoming call
 cordova.plugins.CordovaCall.on('receiveCall', handler);
 ```
 
+_Support: iOS 10+ and Android Marshmallow+_  
+
 - **handler**  
 Type: *Function*   
 A user-defined function that gets executed when you receive a call
@@ -385,6 +389,8 @@ A user-defined function that gets executed when you receive a call
 ```javascript
 cordova.plugins.CordovaCall.on('sendCall', handler);
 ```
+
+_Support: iOS 10+ and Android Marshmallow+_  
 
 - **handler**  
 Type: *Function*   
