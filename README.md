@@ -15,6 +15,7 @@
     - [sendCall](#sendcall)
     - [connectCall](#connectcall)
     - [endCall](#endcall)
+  - [Options](#options)
     - [setAppName](#setappname)
     - [setIcon](#seticon)
     - [setVideo](#setvideo)
@@ -42,22 +43,23 @@ Add the CordovaCall plugin to your Cordova project
 
 Once you install the CordovaCall plugin, it's very easy to get started. Take a look at some of these examples to get a feel for using this plugin. Note that you should place the functions in `onDeviceReady` as specified in the [Cordova docs](https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready). The screenshots used in these examples show iOS 11 on an iPhone 7 (left) and Android Oreo on a Google Pixel (right). Because CallKit doesn't work on the simulator, you'll need to run this plugin on an actual iOS device (iOS 10 or greater). The one exception is the [`sendCall`](#sendcall) function which works on the simulator. CordovaCall works well on the Android Emulator (assuming you have Marshmallow or greater). These examples are meant to be simple, but make sure that in production you call functions within the callbacks to ensure that one finishes before you start another.
 
-```
+```javascript
 //Vanilla JavaScript
-document.addEventListener("deviceready", onDeviceReady, false);
-function onDeviceReady() {
+document.addEventListener('deviceready', function() {
   console.log('cordova.plugins.CordovaCall is now available');
-}
+  var cordovaCall = cordova.plugins.CordovaCall; //not necessary, but might be more convenient
+}, false);
 
 //jQuery-like (ex: DOM7)
 $$(document).on('deviceready', function() {
   console.log('cordova.plugins.CordovaCall is now available');
+  var cordovaCall = cordova.plugins.CordovaCall;
 });
 ```
 
 ## Receive A Phone Call
 
-```
+```javascript
 cordova.plugins.CordovaCall.receiveCall('David Marcus');
 ```
 
@@ -75,7 +77,7 @@ The first time you run this function on Android, you'll be taken to a screen tha
 
 ## Send A Phone Call
 
-```
+```javascript
 cordova.plugins.CordovaCall.sendCall('Daniel Marcus');
 
 //simulate your friend answering the call 5 seconds after you call
@@ -96,7 +98,7 @@ If you're using WebRTC, you might call `pc.createOffer` in the success callback 
 
 ## Make A Call From Recents
 
-```
+```javascript
 cordova.plugins.CordovaCall.setIncludeInRecents(true);
 cordova.plugins.CordovaCall.receiveCall('David Marcus',21);
 
@@ -114,7 +116,7 @@ This only works on iOS 11, and not with Android. It's a really neat feature, so 
 
 ## Use A Title Different Than App Name
 
-```
+```javascript
 cordova.plugins.CordovaCall.setAppName('New App Name');
 cordova.plugins.CordovaCall.receiveCall('David Marcus');
 ```
@@ -128,7 +130,7 @@ Say you name your app something. It will show up as the title by default with Co
 Start by adding your icon to your app directory (the same location for `config.xml`, `www`, and `plugins`). You should select a 120px x 120px image. It should have transparency. This example uses a beaver icon found on [Icons8](https://icons8.com/).
 
 Next you need to add resource-file tags to your `config.xml` (substitute beaver with whatever you named your image). There will already be two platform tags (one for android and one for ios), so just insert the resource-file tags in the platform tags as show here:
-```
+```xml
 <platform name="android">
     <resource-file src="beaver.png" target="res/drawable/beaver.png" />
 </platform>
@@ -139,7 +141,7 @@ Next you need to add resource-file tags to your `config.xml` (substitute beaver 
 
 Run `cordova build ios` followed by `cordova build android`. At this point, you're ready to change the call icon and receive a phone call.
 
-```
+```javascript
 cordova.plugins.CordovaCall.setIcon('beaver');
 cordova.plugins.CordovaCall.receiveCall('David Marcus');
 ```
@@ -149,7 +151,7 @@ cordova.plugins.CordovaCall.receiveCall('David Marcus');
 How awesome is that! You can use your own logo to make your VOIP app be more official.
 
 ## Make It Say Video Instead Of Audio
-```
+```javascript
 cordova.plugins.CordovaCall.setVideo(true);
 cordova.plugins.CordovaCall.receiveCall('David Marcus');
 ```
@@ -161,7 +163,7 @@ This is an iOS only feature. You should use this if your app supports video chat
 
 This only works on iOS. Make sure to add a custom ringtone file to your app directory (the same location for `config.xml`, `www`, and `plugins`). The ringtone should be a `.caf` file.
 
-```
+```xml
 <platform name="ios">
   <resource-file src="ringtone.caf" />
 </platform>
@@ -169,7 +171,7 @@ This only works on iOS. Make sure to add a custom ringtone file to your app dire
 
 Run `cordova build ios`. Now call the [`setRingtone`](#setRingtone) function.
 
-```
+```javascript
 cordova.plugins.CordovaCall.setRingtone('ringtone');
 cordova.plugins.CordovaCall.receiveCall('David Marcus');
 ```
@@ -183,7 +185,7 @@ Click the iPhone below to see and hear an example of receiving a call with a cus
 ## Functions
 
 ### receiveCall
-```
+```javascript
 cordova.plugins.CordovaCall.receiveCall(from [, id] [, success] [, error]);
 ```
 
@@ -203,7 +205,7 @@ Type: *Function*
 A callback that gets executed if the incoming call fails
 
 ### sendCall
-```
+```javascript
 cordova.plugins.CordovaCall.sendCall(to [, id] [, success] [, error]);
 ```
 
@@ -223,7 +225,7 @@ Type: *Function*
 A callback that gets executed if the outgoing call fails
 
 ### connectCall
-```
+```javascript
 cordova.plugins.CordovaCall.connectCall([, success] [, error]);
 ```
 
@@ -237,7 +239,7 @@ Type: *Function*
 A callback that gets executed if the outgoing call fails to connect
 
 ### endCall
-```
+```javascript
 cordova.plugins.CordovaCall.endCall([, success] [, error]);
 ```
 
@@ -250,8 +252,10 @@ A callback that gets executed if the call ends successfully
 Type: *Function*   
 A callback that gets executed if the call fails to end
 
+## Options
+
 ### setAppName
-```
+```javascript
 cordova.plugins.CordovaCall.setAppName(appName [, success] [, error]);
 ```
 
@@ -268,7 +272,7 @@ Type: *Function*
 A callback that gets executed if the title fails to change
 
 ### setIcon
-```
+```javascript
 cordova.plugins.CordovaCall.setIcon(iconName [, success] [, error]);
 ```
 
@@ -285,7 +289,7 @@ Type: *Function*
 A callback that gets executed if the icon fails to change
 
 ### setVideo
-```
+```javascript
 cordova.plugins.CordovaCall.setVideo(value [, success] [, error]);
 ```
 
@@ -302,7 +306,7 @@ Type: *Function*
 A callback that gets executed if the video type fails to change
 
 ### setRingtone
-```
+```javascript
 cordova.plugins.CordovaCall.setRingtone(ringtoneName [, success] [, error]);
 ```
 
@@ -319,7 +323,7 @@ Type: *Function*
 A callback that gets executed if the ringtone fails to change
 
 ### setIncludeInRecents
-```
+```javascript
 cordova.plugins.CordovaCall.setIncludeInRecents(value [, success] [, error]);
 ```
 
@@ -338,7 +342,7 @@ A callback that gets executed if the recent calls preference fails to change
 ## Events
 
 ### onAnswer
-```
+```javascript
 cordova.plugins.CordovaCall.on('answer', handler);
 ```
 
@@ -349,7 +353,7 @@ Type: *Function*
 A user-defined function that gets executed when you answer an incoming call
 
 ### onHangup
-```
+```javascript
 cordova.plugins.CordovaCall.on('hangup', handler);
 ```
 
@@ -360,7 +364,7 @@ Type: *Function*
 A user-defined function that gets executed when you hangup a call
 
 ### onReject
-```
+```javascript
 cordova.plugins.CordovaCall.on('reject', handler);
 ```
 
@@ -369,7 +373,7 @@ Type: *Function*
 A user-defined function that gets executed when you reject an incoming call
 
 ### onSendCall
-```
+```javascript
 cordova.plugins.CordovaCall.on('receiveCall', handler);
 ```
 
@@ -378,7 +382,7 @@ Type: *Function*
 A user-defined function that gets executed when you receive a call
 
 ### onReceiveCall
-```
+```javascript
 cordova.plugins.CordovaCall.on('sendCall', handler);
 ```
 
