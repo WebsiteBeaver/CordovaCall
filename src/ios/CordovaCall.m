@@ -1,5 +1,6 @@
 #import <Cordova/CDV.h>
 #import <CallKit/CallKit.h>
+#import <AVFoundation/AVFoundation.h>
 BOOL hasVideo = NO;
 NSString* appName;
 NSString* ringtone;
@@ -21,6 +22,7 @@ NSMutableDictionary *callbackIds;
     - (void)endCall:(CDVInvokedUrlCommand*)command;
     - (void)registerEvent:(CDVInvokedUrlCommand*)command;
     - (void)receiveCallFromRecents:(NSNotification *) notification;
+    - (void)setupAudioSession;
 @end
 
 @implementation CordovaCall
@@ -284,6 +286,7 @@ NSMutableDictionary *callbackIds;
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action
 {
+    [self setupAudioSession];
     CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
     callUpdate.remoteHandle = action.handle;
     callUpdate.hasVideo = action.video;
@@ -302,6 +305,7 @@ NSMutableDictionary *callbackIds;
 
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action
 {
+    [self setupAudioSession];
     [action fulfill];
     for (id callbackId in callbackIds[@"answer"]) {
         CDVPluginResult* pluginResult = nil;
@@ -340,6 +344,23 @@ NSMutableDictionary *callbackIds;
 {
     [action fulfill];
     //[action fail];
+}
+
+- (void)setupAudioSession
+{
+    @try {
+      AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+      [sessionInstance setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+      [sessionInstance setMode:AVAudioSessionModeVoiceChat error:nil];
+      NSTimeInterval bufferDuration = .005;
+      [sessionInstance setPreferredIOBufferDuration:bufferDuration error:nil];
+      [sessionInstance setPreferredSampleRate:44100 error:nil];
+      NSLog(@"Configuring Audio");
+    }
+    @catch (NSException *exception) {
+       NSLog(@"Unknown error returned from setupAudioSession");
+    }
+    return;
 }
 
 @end
