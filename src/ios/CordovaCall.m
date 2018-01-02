@@ -7,6 +7,7 @@ NSString* ringtone;
 NSString* icon;
 BOOL includeInRecents = NO;
 NSMutableDictionary *callbackIds;
+NSDictionary* pendingCallFromRecents;
 
 @interface CordovaCall : CDVPlugin <CXProviderDelegate>
     @property (nonatomic, strong) CXProvider *provider;
@@ -259,6 +260,13 @@ NSMutableDictionary *callbackIds;
     if(callbackIds[eventName] != nil) {
         [callbackIds[eventName] addObject:command.callbackId];
     }
+    if(pendingCallFromRecents && [eventName isEqual:@"sendCall"]) {
+        NSDictionary *callData = pendingCallFromRecents;
+        CDVPluginResult* pluginResult = nil;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:callData];
+        [pluginResult setKeepCallbackAsBool:YES];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
 }
 
 - (void) receiveCallFromRecents:(NSNotification *) notification
@@ -299,6 +307,9 @@ NSMutableDictionary *callbackIds;
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:callData];
         [pluginResult setKeepCallbackAsBool:YES];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+    }
+    if([callbackIds[@"sendCall"] count] == 0) {
+        pendingCallFromRecents = callData;
     }
     //[action fail];
 }
