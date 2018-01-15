@@ -374,7 +374,7 @@ _Support: iOS 10+ and Android Marshmallow+_
 Type: *Function*   
 A user-defined function that gets executed when you reject an incoming call
 
-### onSendCall
+### onReceiveCall
 ```javascript
 cordova.plugins.CordovaCall.on('receiveCall', handler);
 ```
@@ -385,7 +385,7 @@ _Support: iOS 10+ and Android Marshmallow+_
 Type: *Function*   
 A user-defined function that gets executed when you receive a call
 
-### onReceiveCall
+### onSendCall
 ```javascript
 cordova.plugins.CordovaCall.on('sendCall', handler);
 ```
