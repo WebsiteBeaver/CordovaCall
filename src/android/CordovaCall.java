@@ -187,6 +187,7 @@ public class CordovaCall extends CordovaPlugin {
               if(permissionCounter == 2) {
                 tm.registerPhoneAccount(phoneAccount);
                 Intent phoneIntent = new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS);
+                phoneIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 this.cordova.getActivity().getApplicationContext().startActivity(phoneIntent);
               } else {
                 this.callbackContext.error("You need to accept phone account permissions in order to receive calls");
