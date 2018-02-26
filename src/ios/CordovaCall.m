@@ -22,6 +22,10 @@ NSDictionary* pendingCallFromRecents;
     - (void)connectCall:(CDVInvokedUrlCommand*)command;
     - (void)endCall:(CDVInvokedUrlCommand*)command;
     - (void)registerEvent:(CDVInvokedUrlCommand*)command;
+    - (void)mute:(CDVInvokedUrlCommand*)command;
+    - (void)unmute:(CDVInvokedUrlCommand*)command;
+    - (void)speakerPhoneOn:(CDVInvokedUrlCommand*)command;
+    - (void)speakerPhoneOff:(CDVInvokedUrlCommand*)command;
     - (void)receiveCallFromRecents:(NSNotification *) notification;
     - (void)setupAudioSession;
 @end
@@ -372,6 +376,66 @@ NSDictionary* pendingCallFromRecents;
        NSLog(@"Unknown error returned from setupAudioSession");
     }
     return;
+}
+
+- (void)mute:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+    if(sessionInstance.isInputGainSettable) {
+      BOOL success = [sessionInstance setInputGain:0.0 error:nil];
+      if(success) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Muted Successfully"];
+      } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
+      }
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not muted because this device does not allow changing inputGain"];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)unmute:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+    if(sessionInstance.isInputGainSettable) {
+      BOOL success = [sessionInstance setInputGain:1.0 error:nil];
+      if(success) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Muted Successfully"];
+      } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
+      }
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Not unmuted because this device does not allow changing inputGain"];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)speakerPhoneOn:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+    BOOL success = [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+    if(success) {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Speakerphone is on"];
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)speakerPhoneOff:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+    BOOL success = [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+    if(success) {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Speakerphone is off"];
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 @end

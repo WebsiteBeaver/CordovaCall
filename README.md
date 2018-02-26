@@ -15,6 +15,10 @@
     - [sendCall](#sendcall)
     - [connectCall](#connectcall)
     - [endCall](#endcall)
+    - [mute](#mute)
+    - [unmute](#unmute)
+    - [speakerPhoneOn](#speakerphoneon)
+    - [speakerPhoneOff](#speakerphoneoff)
   - [Options](#options)
     - [setAppName](#setappname)
     - [setIcon](#seticon)
@@ -251,6 +255,62 @@ A callback that gets executed if the call ends successfully
 - **error**  
 Type: *Function*   
 A callback that gets executed if the call fails to end
+
+### mute
+```javascript
+cordova.plugins.CordovaCall.mute([, success] [, error]);
+```
+
+_Support: iOS 10+ and Android Marshmallow+_   
+
+- **success**  
+Type: *Function*   
+A callback that gets executed if the call gets muted successfully
+- **error**  
+Type: *Function*   
+A callback that gets executed if the call fails to mute
+
+### unmute
+```javascript
+cordova.plugins.CordovaCall.unmute([, success] [, error]);
+```
+
+_Support: iOS 10+ and Android Marshmallow+_   
+
+- **success**  
+Type: *Function*   
+A callback that gets executed if the call gets unmuted successfully
+- **error**  
+Type: *Function*   
+A callback that gets executed if the call fails to unmute
+
+### speakerPhoneOn
+```javascript
+cordova.plugins.CordovaCall.speakerPhoneOn([, success] [, error]);
+```
+
+_Support: iOS 10+ and Android Marshmallow+_   
+
+- **success**  
+Type: *Function*   
+A callback that gets executed if the speakerphone gets turned on
+- **error**  
+Type: *Function*   
+A callback that gets executed if the speakerphone fails to turn on
+
+### speakerPhoneOff
+```javascript
+cordova.plugins.CordovaCall.speakerPhoneOff([, success] [, error]);
+```
+
+_Support: iOS 10+ and Android Marshmallow+_   
+
+- **success**  
+Type: *Function*   
+A callback that gets executed if the speakerphone gets turned off
+- **error**  
+Type: *Function*   
+A callback that gets executed if the speakerphone fails to turn off
 
 ## Options
 

@@ -58,6 +58,22 @@ exports.endCall = function(success, error) {
     exec(success, error, "CordovaCall", "endCall", []);
 };
 
+exports.mute = function(success, error) {
+    exec(success, error, "CordovaCall", "mute", []);
+};
+
+exports.unmute = function(success, error) {
+    exec(success, error, "CordovaCall", "unmute", []);
+};
+
+exports.speakerPhoneOn = function(success, error) {
+    exec(success, error, "CordovaCall", "speakerPhoneOn", []);
+};
+
+exports.speakerPhoneOff = function(success, error) {
+    exec(success, error, "CordovaCall", "speakerPhoneOff", []);
+};
+
 exports.on = function(e, f) {
     var success = function(message) {
       f(message);

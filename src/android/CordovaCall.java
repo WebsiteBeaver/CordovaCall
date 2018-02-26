@@ -23,6 +23,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import android.graphics.drawable.Icon;
+import android.media.AudioManager;
 import android.util.Log;
 
 public class CordovaCall extends CordovaPlugin {
@@ -171,6 +172,22 @@ public class CordovaCall extends CordovaPlugin {
                 this.callbackContext.error("This icon does not exist. Make sure to add it to the res/drawable folder the right way.");
             }
             return true;
+        } else if (action.equals("mute")) {
+            this.mute();
+            this.callbackContext.success("Muted Successfully");
+            return true;
+        } else if (action.equals("unmute")) {
+            this.unmute();
+            this.callbackContext.success("Unmuted Successfully");
+            return true;
+        } else if (action.equals("speakerPhoneOn")) {
+            this.speakerPhoneOn();
+            this.callbackContext.success("Speakerphone is on");
+            return true;
+        } else if (action.equals("speakerPhoneOff")) {
+            this.speakerPhoneOff();
+            this.callbackContext.success("Speakerphone is off");
+            return true;
         }
         return false;
     }
@@ -207,6 +224,26 @@ public class CordovaCall extends CordovaPlugin {
         callInfo.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, true);
         tm.placeCall(uri, callInfo);
         this.callbackContext.success("Outgoing call successful");
+    }
+
+    private void mute() {
+        AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMicrophoneMute(true);
+    }
+
+    private void unmute() {
+        AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMicrophoneMute(false);
+    }
+
+    private void speakerPhoneOn() {
+        AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setSpeakerphoneOn(true);
+    }
+
+    private void speakerPhoneOff() {
+        AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setSpeakerphoneOn(false);
     }
 
     public static String getApplicationName(Context context) {
