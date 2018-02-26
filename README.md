@@ -261,7 +261,7 @@ A callback that gets executed if the call fails to end
 cordova.plugins.CordovaCall.mute([, success] [, error]);
 ```
 
-_Support: iOS 10+ and Android Marshmallow+_   
+_Support: Android Marshmallow+_   
 
 - **success**  
 Type: *Function*   
@@ -275,7 +275,7 @@ A callback that gets executed if the call fails to mute
 cordova.plugins.CordovaCall.unmute([, success] [, error]);
 ```
 
-_Support: iOS 10+ and Android Marshmallow+_   
+_Support: Android Marshmallow+_   
 
 - **success**  
 Type: *Function*   
