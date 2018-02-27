@@ -56,6 +56,8 @@ NSDictionary* pendingCallFromRecents;
     [callbackIds setObject:[NSMutableArray array] forKey:@"hangup"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"sendCall"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"receiveCall"];
+    [callbackIds setObject:[NSMutableArray array] forKey:@"mute"];
+    [callbackIds setObject:[NSMutableArray array] forKey:@"unmute"];
     //allows user to make call from recents
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveCallFromRecents:) name:@"RecentsCallNotification" object:nil];
 }
@@ -171,6 +173,9 @@ NSDictionary* pendingCallFromRecents;
         callUpdate.remoteHandle = handle;
         callUpdate.hasVideo = hasVideo;
         callUpdate.localizedCallerName = callName;
+        callUpdate.supportsGrouping = NO;
+        callUpdate.supportsUngrouping = NO;
+        callUpdate.supportsHolding = NO;
 
         [self.provider reportNewIncomingCallWithUUID:callUUID update:callUpdate completion:^(NSError * _Nullable error) {
             if(error == nil) {
@@ -303,6 +308,9 @@ NSDictionary* pendingCallFromRecents;
     callUpdate.remoteHandle = action.handle;
     callUpdate.hasVideo = action.video;
     callUpdate.localizedCallerName = action.contactIdentifier;
+    callUpdate.supportsGrouping = NO;
+    callUpdate.supportsUngrouping = NO;
+    callUpdate.supportsHolding = NO;
     [self.provider reportCallWithUUID:action.callUUID updated:callUpdate];
     [action fulfill];
     NSDictionary *callData = @{@"callName":action.contactIdentifier, @"callId": action.handle.value, @"isVideo": action.video?@YES:@NO, @"message": @"sendCall event called successfully"};
@@ -355,9 +363,16 @@ NSDictionary* pendingCallFromRecents;
     //[action fail];
 }
 
-- (void)provider:(CXProvider *)provider performSetHeldCallAction:(CXSetHeldCallAction *)action
+- (void)provider:(CXProvider *)provider performSetMutedCallAction:(CXSetMutedCallAction *)action
 {
     [action fulfill];
+    BOOL isMuted = action.muted;
+    for (id callbackId in callbackIds[isMuted?@"mute":@"unmute"]) {
+        CDVPluginResult* pluginResult = nil;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:isMuted?@"mute event called successfully":@"unmute event called successfully"];
+        [pluginResult setKeepCallbackAsBool:YES];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+    }
     //[action fail];
 }
 

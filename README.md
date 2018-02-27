@@ -29,8 +29,10 @@
     - [onAnswer](#onanswer)
     - [onHangup](#onhangup)
     - [onReject](#onreject)
-    - [onSendCall](#onsendcall)
     - [onReceiveCall](#onreceivecall)
+    - [onSendCall](#onsendcall)
+    - [onMute](#onmute)
+    - [onUnmute](#onunmute)
 - [Common Errors](#common-errors)
   - [Info.plist](#infoplist)
 - [About](#about)
@@ -455,6 +457,28 @@ _Support: iOS 10+ and Android Marshmallow+_
 - **handler**  
 Type: *Function*   
 A user-defined function that gets executed when you send a call. You can use the data that gets returned in the handler to access the user id that corresponds to the callee's name. This is very useful if you make a call from recents, and need to get the call information.
+
+### onMute
+```javascript
+cordova.plugins.CordovaCall.on('mute', handler);
+```
+
+_Support: iOS 10+_  
+
+- **handler**  
+Type: *Function*   
+A user-defined function that gets executed when you press the mute button on the native call UI. Note that it does not trigger if you call the [mute](#mute) function.
+
+### onUnmute
+```javascript
+cordova.plugins.CordovaCall.on('unmute', handler);
+```
+
+_Support: iOS 10+_  
+
+- **handler**  
+Type: *Function*   
+A user-defined function that gets executed when you press the unmute button on the native call UI. Note that it does not trigger if you call the [unmute](#unmute) function.
 
 # Common Errors
 
