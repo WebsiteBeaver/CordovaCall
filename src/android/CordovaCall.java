@@ -30,6 +30,7 @@ public class CordovaCall extends CordovaPlugin {
 
     private static String TAG = "CordovaCall";
     public static final int CALL_PHONE_REQ_CODE = 0;
+    public static final int REAL_PHONE_CALL = 1;
     private int permissionCounter = 0;
     private TelecomManager tm;
     private PhoneAccountHandle handle;
@@ -38,6 +39,7 @@ public class CordovaCall extends CordovaPlugin {
     private String appName;
     private String from;
     private String to;
+    private String realCallTo;
     private static HashMap<String, ArrayList<CallbackContext>> callbackContextMap = new HashMap<String, ArrayList<CallbackContext>>();
     private static CordovaInterface cordovaInterface;
     private static Icon icon;
@@ -180,13 +182,26 @@ public class CordovaCall extends CordovaPlugin {
             this.unmute();
             this.callbackContext.success("Unmuted Successfully");
             return true;
-        } else if (action.equals("speakerPhoneOn")) {
-            this.speakerPhoneOn();
+        } else if (action.equals("speakerOn")) {
+            this.speakerOn();
             this.callbackContext.success("Speakerphone is on");
             return true;
-        } else if (action.equals("speakerPhoneOff")) {
-            this.speakerPhoneOff();
+        } else if (action.equals("speakerOff")) {
+            this.speakerOff();
             this.callbackContext.success("Speakerphone is off");
+            return true;
+        } else if (action.equals("sendRealCall")) {
+            realCallTo = args.getString(0);
+            if(realCallTo != null) {
+              cordova.getThreadPool().execute(new Runnable() {
+                  public void run() {
+                      sendRealCallPhonePermission();
+                  }
+              });
+              this.callbackContext.success("Call Successful");
+            } else {
+              this.callbackContext.error("Call Failed. You need to enter a phone number.");
+            }
             return true;
         }
         return false;
@@ -236,12 +251,12 @@ public class CordovaCall extends CordovaPlugin {
         audioManager.setMicrophoneMute(false);
     }
 
-    private void speakerPhoneOn() {
+    private void speakerOn() {
         AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setSpeakerphoneOn(true);
     }
 
-    private void speakerPhoneOff() {
+    private void speakerOff() {
         AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
         audioManager.setSpeakerphoneOn(false);
     }
@@ -254,6 +269,20 @@ public class CordovaCall extends CordovaPlugin {
 
     protected void getCallPhonePermission() {
         cordova.requestPermission(this, CALL_PHONE_REQ_CODE, Manifest.permission.CALL_PHONE);
+    }
+
+    protected void sendRealCallPhonePermission() {
+        cordova.requestPermission(this, REAL_PHONE_CALL, Manifest.permission.CALL_PHONE);
+    }
+
+    private void sendRealCall() {
+        try {
+          Intent intent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", realCallTo, null));
+          this.cordova.getActivity().getApplicationContext().startActivity(intent);
+        } catch(Exception e) {
+          this.callbackContext.error("Call Failed");
+        }
+        this.callbackContext.success("Call Successful");
     }
 
     @Override
@@ -271,6 +300,9 @@ public class CordovaCall extends CordovaPlugin {
         {
             case CALL_PHONE_REQ_CODE:
                 this.sendCall();
+                break;
+            case REAL_PHONE_CALL:
+                this.sendRealCall();
                 break;
         }
     }

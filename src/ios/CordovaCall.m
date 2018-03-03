@@ -24,8 +24,9 @@ NSDictionary* pendingCallFromRecents;
     - (void)registerEvent:(CDVInvokedUrlCommand*)command;
     - (void)mute:(CDVInvokedUrlCommand*)command;
     - (void)unmute:(CDVInvokedUrlCommand*)command;
-    - (void)speakerPhoneOn:(CDVInvokedUrlCommand*)command;
-    - (void)speakerPhoneOff:(CDVInvokedUrlCommand*)command;
+    - (void)speakerOn:(CDVInvokedUrlCommand*)command;
+    - (void)speakerOff:(CDVInvokedUrlCommand*)command;
+    - (void)sendRealCall:(CDVInvokedUrlCommand*)command;
     - (void)receiveCallFromRecents:(NSNotification *) notification;
     - (void)setupAudioSession;
 @end
@@ -427,7 +428,7 @@ NSDictionary* pendingCallFromRecents;
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)speakerPhoneOn:(CDVInvokedUrlCommand*)command
+- (void)speakerOn:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
     AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
@@ -440,7 +441,7 @@ NSDictionary* pendingCallFromRecents;
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)speakerPhoneOff:(CDVInvokedUrlCommand*)command
+- (void)speakerOff:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
     AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
@@ -451,6 +452,35 @@ NSDictionary* pendingCallFromRecents;
       pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
     }
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)sendRealCall:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    NSString* phoneNumber = [command.arguments objectAtIndex:0];
+    NSString* telNumber = [@"tel://" stringByAppendingString:phoneNumber];
+    if (@available(iOS 10.0, *)) {
+      [[UIApplication sharedApplication] openURL:[NSURL URLWithString:telNumber]
+                                         options:nil
+                                         completionHandler:^(BOOL success) {
+                                           if(success) {
+                                             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Call Successful"];
+                                             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                                           } else {
+                                             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Call Failed"];
+                                             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                                           }
+                                         }];
+    } else {
+      BOOL success = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:telNumber]];
+      if(success) {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"Call Successful"];
+      } else {
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Call Failed"];
+      }
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
+
 }
 
 @end

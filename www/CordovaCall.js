@@ -66,12 +66,16 @@ exports.unmute = function(success, error) {
     exec(success, error, "CordovaCall", "unmute", []);
 };
 
-exports.speakerPhoneOn = function(success, error) {
-    exec(success, error, "CordovaCall", "speakerPhoneOn", []);
+exports.speakerOn = function(success, error) {
+    exec(success, error, "CordovaCall", "speakerOn", []);
 };
 
-exports.speakerPhoneOff = function(success, error) {
-    exec(success, error, "CordovaCall", "speakerPhoneOff", []);
+exports.speakerOff = function(success, error) {
+    exec(success, error, "CordovaCall", "speakerOff", []);
+};
+
+exports.sendRealCall = function(to, success, error) {
+    exec(success, error, "CordovaCall", "sendRealCall", [to]);
 };
 
 exports.on = function(e, f) {

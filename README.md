@@ -17,8 +17,9 @@
     - [endCall](#endcall)
     - [mute](#mute)
     - [unmute](#unmute)
-    - [speakerPhoneOn](#speakerphoneon)
-    - [speakerPhoneOff](#speakerphoneoff)
+    - [speakerOn](#speakerOn)
+    - [speakerOff](#speakerOff)
+    - [sendRealCall](#sendrealcall)
   - [Options](#options)
     - [setAppName](#setappname)
     - [setIcon](#seticon)
@@ -286,9 +287,9 @@ A callback that gets executed if the call gets unmuted successfully
 Type: *Function*   
 A callback that gets executed if the call fails to unmute
 
-### speakerPhoneOn
+### speakerOn
 ```javascript
-cordova.plugins.CordovaCall.speakerPhoneOn([, success] [, error]);
+cordova.plugins.CordovaCall.speakerOn([, success] [, error]);
 ```
 
 _Support: iOS 10+ and Android Marshmallow+_   
@@ -300,9 +301,9 @@ A callback that gets executed if the speakerphone gets turned on
 Type: *Function*   
 A callback that gets executed if the speakerphone fails to turn on
 
-### speakerPhoneOff
+### speakerOff
 ```javascript
-cordova.plugins.CordovaCall.speakerPhoneOff([, success] [, error]);
+cordova.plugins.CordovaCall.speakerOff([, success] [, error]);
 ```
 
 _Support: iOS 10+ and Android Marshmallow+_   
@@ -313,6 +314,23 @@ A callback that gets executed if the speakerphone gets turned off
 - **error**  
 Type: *Function*   
 A callback that gets executed if the speakerphone fails to turn off
+
+### sendRealCall
+```javascript
+cordova.plugins.CordovaCall.sendRealCall(to [, success] [, error]);
+```
+
+_Support: iOS 2+ and Android Cupcake+_   
+
+- **to**  
+Type: *String*   
+The number of the person you want to call (for example 5618770325). Note that this function will actually try to make a real phone call, and is not meant for voip apps.
+- **success**  
+Type: *Function*   
+A callback that gets executed if the phone call is successful
+- **error**  
+Type: *Function*   
+A callback that gets executed if the phone call fails
 
 ## Options
 
