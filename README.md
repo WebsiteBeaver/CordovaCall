@@ -17,9 +17,9 @@
     - [endCall](#endcall)
     - [mute](#mute)
     - [unmute](#unmute)
-    - [speakerOn](#speakerOn)
-    - [speakerOff](#speakerOff)
-    - [sendRealCall](#sendrealcall)
+    - [speakerOn](#speakeron)
+    - [speakerOff](#speakeroff)
+    - [callNumber](#callnumber)
   - [Options](#options)
     - [setAppName](#setappname)
     - [setIcon](#seticon)
@@ -55,7 +55,7 @@ Once you install the CordovaCall plugin, it's very easy to get started. Take a l
 document.addEventListener('deviceready', function() {
   console.log('cordova.plugins.CordovaCall is now available');
   var cordovaCall = cordova.plugins.CordovaCall; //not necessary, but might be more convenient
-}, false);
+});
 
 //jQuery-like (ex: DOM7)
 $$(document).on('deviceready', function() {
@@ -315,12 +315,14 @@ A callback that gets executed if the speakerphone gets turned off
 Type: *Function*   
 A callback that gets executed if the speakerphone fails to turn off
 
-### sendRealCall
+### callNumber
 ```javascript
-cordova.plugins.CordovaCall.sendRealCall(to [, success] [, error]);
+cordova.plugins.CordovaCall.callNumber(to [, success] [, error]);
 ```
 
-_Support: iOS 2+ and Android Cupcake+_   
+_Support: iOS 2+ and Android Cupcake+_
+
+_**This is the only function that isn't related to VOIP, as it strictly deals with phone calls.**_
 
 - **to**  
 Type: *String*   

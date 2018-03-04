@@ -190,12 +190,12 @@ public class CordovaCall extends CordovaPlugin {
             this.speakerOff();
             this.callbackContext.success("Speakerphone is off");
             return true;
-        } else if (action.equals("sendRealCall")) {
+        } else if (action.equals("callNumber")) {
             realCallTo = args.getString(0);
             if(realCallTo != null) {
               cordova.getThreadPool().execute(new Runnable() {
                   public void run() {
-                      sendRealCallPhonePermission();
+                      callNumberPhonePermission();
                   }
               });
               this.callbackContext.success("Call Successful");
@@ -271,11 +271,11 @@ public class CordovaCall extends CordovaPlugin {
         cordova.requestPermission(this, CALL_PHONE_REQ_CODE, Manifest.permission.CALL_PHONE);
     }
 
-    protected void sendRealCallPhonePermission() {
+    protected void callNumberPhonePermission() {
         cordova.requestPermission(this, REAL_PHONE_CALL, Manifest.permission.CALL_PHONE);
     }
 
-    private void sendRealCall() {
+    private void callNumber() {
         try {
           Intent intent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", realCallTo, null));
           this.cordova.getActivity().getApplicationContext().startActivity(intent);
@@ -302,7 +302,7 @@ public class CordovaCall extends CordovaPlugin {
                 this.sendCall();
                 break;
             case REAL_PHONE_CALL:
-                this.sendRealCall();
+                this.callNumber();
                 break;
         }
     }
