@@ -26,7 +26,7 @@ NSDictionary* pendingCallFromRecents;
     - (void)unmute:(CDVInvokedUrlCommand*)command;
     - (void)speakerOn:(CDVInvokedUrlCommand*)command;
     - (void)speakerOff:(CDVInvokedUrlCommand*)command;
-    - (void)sendRealCall:(CDVInvokedUrlCommand*)command;
+    - (void)callNumber:(CDVInvokedUrlCommand*)command;
     - (void)receiveCallFromRecents:(NSNotification *) notification;
     - (void)setupAudioSession;
 @end
@@ -454,7 +454,7 @@ NSDictionary* pendingCallFromRecents;
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)sendRealCall:(CDVInvokedUrlCommand*)command
+- (void)callNumber:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
     NSString* phoneNumber = [command.arguments objectAtIndex:0];

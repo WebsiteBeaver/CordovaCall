@@ -74,8 +74,8 @@ exports.speakerOff = function(success, error) {
     exec(success, error, "CordovaCall", "speakerOff", []);
 };
 
-exports.sendRealCall = function(to, success, error) {
-    exec(success, error, "CordovaCall", "sendRealCall", [to]);
+exports.callNumber = function(to, success, error) {
+    exec(success, error, "CordovaCall", "callNumber", [to]);
 };
 
 exports.on = function(e, f) {
