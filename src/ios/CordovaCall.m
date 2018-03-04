@@ -8,6 +8,7 @@ NSString* icon;
 BOOL includeInRecents = NO;
 NSMutableDictionary *callbackIds;
 NSDictionary* pendingCallFromRecents;
+BOOL monitorAudioRouteChange = NO;
 
 @interface CordovaCall : CDVPlugin <CXProviderDelegate>
     @property (nonatomic, strong) CXProvider *provider;
@@ -59,8 +60,12 @@ NSDictionary* pendingCallFromRecents;
     [callbackIds setObject:[NSMutableArray array] forKey:@"receiveCall"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"mute"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"unmute"];
+    [callbackIds setObject:[NSMutableArray array] forKey:@"speakerOn"];
+    [callbackIds setObject:[NSMutableArray array] forKey:@"speakerOff"];
     //allows user to make call from recents
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveCallFromRecents:) name:@"RecentsCallNotification" object:nil];
+    //detect Audio Route Changes to make speakerOn and speakerOff event handlers
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAudioRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
 }
 
 - (void)updateProviderConfig {
@@ -327,6 +332,17 @@ NSDictionary* pendingCallFromRecents;
     //[action fail];
 }
 
+- (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession
+{
+    NSLog(@"activated audio");
+    monitorAudioRouteChange = YES;
+}
+
+- (void)provider:(CXProvider *)provider didDeactivateAudioSession:(AVAudioSession *)audioSession
+{
+    NSLog(@"deactivated audio");
+}
+
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action
 {
     [self setupAudioSession];
@@ -360,6 +376,7 @@ NSDictionary* pendingCallFromRecents;
             }
         }
     }
+    monitorAudioRouteChange = NO;
     [action fulfill];
     //[action fail];
 }
@@ -392,6 +409,33 @@ NSDictionary* pendingCallFromRecents;
        NSLog(@"Unknown error returned from setupAudioSession");
     }
     return;
+}
+
+- (void)handleAudioRouteChange:(NSNotification *) notification
+{
+    if(monitorAudioRouteChange) {
+        NSNumber* reasonValue = notification.userInfo[@"AVAudioSessionRouteChangeReasonKey"];
+        AVAudioSessionRouteDescription* previousRouteKey = notification.userInfo[@"AVAudioSessionRouteChangePreviousRouteKey"];
+        NSArray* outputs = [previousRouteKey outputs];
+        if([outputs count] > 0) {
+            AVAudioSessionPortDescription *output = outputs[0];
+            if(![output.portType isEqual: @"Speaker"] && [reasonValue isEqual:@4]) {
+                for (id callbackId in callbackIds[@"speakerOn"]) {
+                    CDVPluginResult* pluginResult = nil;
+                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"speakerOn event called successfully"];
+                    [pluginResult setKeepCallbackAsBool:YES];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+                }
+            } else if([output.portType isEqual: @"Speaker"] && [reasonValue isEqual:@3]) {
+                for (id callbackId in callbackIds[@"speakerOff"]) {
+                    CDVPluginResult* pluginResult = nil;
+                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"speakerOff event called successfully"];
+                    [pluginResult setKeepCallbackAsBool:YES];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+                }
+            }
+        }
+    }
 }
 
 - (void)mute:(CDVInvokedUrlCommand*)command

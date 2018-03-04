@@ -63,9 +63,16 @@ public class CordovaCall extends CordovaPlugin {
         appName = getApplicationName(this.cordova.getActivity().getApplicationContext());
         handle = new PhoneAccountHandle(new ComponentName(this.cordova.getActivity().getApplicationContext(),MyConnectionService.class),appName);
         tm = (TelecomManager)this.cordova.getActivity().getApplicationContext().getSystemService(this.cordova.getActivity().getApplicationContext().TELECOM_SERVICE);
+        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+          phoneAccount = new PhoneAccount.Builder(handle, appName)
+                  .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
+                  .build();
+          tm.registerPhoneAccount(phoneAccount);
+        }
         phoneAccount = new PhoneAccount.Builder(handle, appName)
-                .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
-                .build();
+                 .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
+                 .build();
+        tm.registerPhoneAccount(phoneAccount);
         callbackContextMap.put("answer",new ArrayList<CallbackContext>());
         callbackContextMap.put("reject",new ArrayList<CallbackContext>());
         callbackContextMap.put("hangup",new ArrayList<CallbackContext>());
@@ -159,9 +166,16 @@ public class CordovaCall extends CordovaPlugin {
         } else if (action.equals("setAppName")) {
             String appName = args.getString(0);
             handle = new PhoneAccountHandle(new ComponentName(this.cordova.getActivity().getApplicationContext(),MyConnectionService.class),appName);
-            phoneAccount = new PhoneAccount.Builder(handle, appName)
-                  .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
+            if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+              phoneAccount = new PhoneAccount.Builder(handle, appName)
+                  .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
                   .build();
+              tm.registerPhoneAccount(phoneAccount);
+            }
+            phoneAccount = new PhoneAccount.Builder(handle, appName)
+                 .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
+                 .build();
+            tm.registerPhoneAccount(phoneAccount);
             this.callbackContext.success("App Name Changed Successfully");
             return true;
         } else if (action.equals("setIcon")) {
@@ -217,7 +231,6 @@ public class CordovaCall extends CordovaPlugin {
               this.callbackContext.success("Incoming call successful");
           } catch(Exception e) {
               if(permissionCounter == 2) {
-                tm.registerPhoneAccount(phoneAccount);
                 Intent phoneIntent = new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS);
                 phoneIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 this.cordova.getActivity().getApplicationContext().startActivity(phoneIntent);

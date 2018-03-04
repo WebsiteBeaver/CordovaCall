@@ -34,6 +34,8 @@
     - [onSendCall](#onsendcall)
     - [onMute](#onmute)
     - [onUnmute](#onunmute)
+    - [onSpeakerOn](#onspeakeron)
+    - [onSpeakerOff](#onspeakeroff)
 - [Common Errors](#common-errors)
   - [Info.plist](#infoplist)
 - [About](#about)
@@ -78,7 +80,7 @@ Once you press Accept on iOS or you Swipe up to answer on Android, you'll see th
 
 If you're using WebRTC to make a video or audio chat app, you can call [`receiveCall`](#receivecall) right before `pc.setRemoteDescription`. For an excellent explanation of how to use WebRTC check out [this WebsiteBeaver tutorial](https://websitebeaver.com/insanely-simple-webrtc-video-chat-using-firebase-with-codepen-demo).
 
-The first time you run this function on Android, you'll be taken to a screen that says Calling accounts. You have to click on `All calling accounts` and then click on the switch as shown below:
+The first time you run this function on Android, you'll be taken to a screen that says Calling accounts. You have to click on `All calling accounts` and then click on the switch as shown below. __On Android Oreo and above this doesn't happen anymore 😃 The `Calling accounts` screen gets skipped, and the native call UI is shown immediately.__
 
 <img alt="CordovaCall All calling accounts Android ConnectionService" src="https://user-images.githubusercontent.com/26162804/31642259-09c13ce0-b2b8-11e7-98c4-b82030eb7782.png" height="600" /> <img alt="CordovaCall Accept Phone Account Android ConnectionService" src="https://user-images.githubusercontent.com/26162804/31642260-09d144dc-b2b8-11e7-8e6e-e806f4abad21.png" height="600" />
 
@@ -499,6 +501,28 @@ _Support: iOS 10+_
 - **handler**  
 Type: *Function*   
 A user-defined function that gets executed when you press the unmute button on the native call UI. Note that it does not trigger if you call the [unmute](#unmute) function.
+
+### onSpeakerOn
+```javascript
+cordova.plugins.CordovaCall.on('speakerOn', handler);
+```
+
+_Support: iOS 10+_  
+
+- **handler**  
+Type: *Function*   
+A user-defined function that gets executed when you press the speakerOn button on the native call UI, and when you call the [speakerOn](#speakerOn) function.
+
+### onSpeakerOff
+```javascript
+cordova.plugins.CordovaCall.on('speakerOff', handler);
+```
+
+_Support: iOS 10+_  
+
+- **handler**  
+Type: *Function*   
+A user-defined function that gets executed when you press the speakerOff button on the native call UI, and when you call the [speakerOff](#speakerOff) function.
 
 # Common Errors
 
