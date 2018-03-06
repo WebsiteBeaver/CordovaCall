@@ -63,7 +63,7 @@ public class CordovaCall extends CordovaPlugin {
         appName = getApplicationName(this.cordova.getActivity().getApplicationContext());
         handle = new PhoneAccountHandle(new ComponentName(this.cordova.getActivity().getApplicationContext(),MyConnectionService.class),appName);
         tm = (TelecomManager)this.cordova.getActivity().getApplicationContext().getSystemService(this.cordova.getActivity().getApplicationContext().TELECOM_SERVICE);
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if(android.os.Build.VERSION.SDK_INT >= 26) {
           phoneAccount = new PhoneAccount.Builder(handle, appName)
                   .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
                   .build();
