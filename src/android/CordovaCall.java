@@ -32,6 +32,7 @@ public class CordovaCall extends CordovaPlugin {
     public static final int CALL_PHONE_REQ_CODE = 0;
     public static final int REAL_PHONE_CALL = 1;
     private int permissionCounter = 0;
+    private String pendingAction;
     private TelecomManager tm;
     private PhoneAccountHandle handle;
     private PhoneAccount phoneAccount;
@@ -83,7 +84,7 @@ public class CordovaCall extends CordovaPlugin {
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
-        this.receiveCall();
+        this.checkCallPermission();
     }
 
     @Override
@@ -100,7 +101,8 @@ public class CordovaCall extends CordovaPlugin {
             } else {
                 from = args.getString(0);
                 permissionCounter = 2;
-                this.receiveCall();
+                pendingAction = "receiveCall";
+                this.checkCallPermission();
             }
             return true;
         } else if (action.equals("sendCall")) {
@@ -115,11 +117,14 @@ public class CordovaCall extends CordovaPlugin {
                 }
             } else {
                 to = args.getString(0);
-                cordova.getThreadPool().execute(new Runnable() {
+                permissionCounter = 2;
+                pendingAction = "sendCall";
+                this.checkCallPermission();
+                /*cordova.getThreadPool().execute(new Runnable() {
                     public void run() {
                         getCallPhonePermission();
                     }
-                });
+                });*/
             }
             return true;
         } else if (action.equals("connectCall")) {
@@ -221,25 +226,34 @@ public class CordovaCall extends CordovaPlugin {
         return false;
     }
 
-    private void receiveCall() {
+    private void checkCallPermission() {
         if(permissionCounter >= 1) {
-          try {
-              Bundle callInfo = new Bundle();
-              callInfo.putString("from",from);
-              tm.addNewIncomingCall(handle, callInfo);
-              permissionCounter = 0;
-              this.callbackContext.success("Incoming call successful");
-          } catch(Exception e) {
-              if(permissionCounter == 2) {
-                Intent phoneIntent = new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS);
-                phoneIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                this.cordova.getActivity().getApplicationContext().startActivity(phoneIntent);
-              } else {
-                this.callbackContext.error("You need to accept phone account permissions in order to receive calls");
-              }
-          }
+            PhoneAccount currentPhoneAccount = tm.getPhoneAccount(handle);
+            if(currentPhoneAccount.isEnabled()) {
+                if(pendingAction == "receiveCall") {
+                    this.receiveCall();
+                } else if(pendingAction == "sendCall") {
+                    this.sendCall();
+                }
+            } else {
+                if(permissionCounter == 2) {
+                    Intent phoneIntent = new Intent(TelecomManager.ACTION_CHANGE_PHONE_ACCOUNTS);
+                    phoneIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    this.cordova.getActivity().getApplicationContext().startActivity(phoneIntent);
+                } else {
+                    this.callbackContext.error("You need to accept phone account permissions in order to send and receive calls");
+                }
+            }
         }
         permissionCounter--;
+    }
+
+    private void receiveCall() {
+        Bundle callInfo = new Bundle();
+        callInfo.putString("from",from);
+        tm.addNewIncomingCall(handle, callInfo);
+        permissionCounter = 0;
+        this.callbackContext.success("Incoming call successful");
     }
 
     private void sendCall() {
@@ -251,6 +265,7 @@ public class CordovaCall extends CordovaPlugin {
         callInfo.putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, handle);
         callInfo.putBoolean(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, true);
         tm.placeCall(uri, callInfo);
+        permissionCounter = 0;
         this.callbackContext.success("Outgoing call successful");
     }
 
