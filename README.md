@@ -26,6 +26,7 @@
     - [setVideo](#setvideo)
     - [setRingtone](#setringtone)
     - [setIncludeInRecents](#setincludeinrecents)
+    - [setDTMFState](#setdtmfstate)
   - [Events](#events)
     - [onAnswer](#onanswer)
     - [onHangup](#onhangup)
@@ -36,6 +37,7 @@
     - [onUnmute](#onunmute)
     - [onSpeakerOn](#onspeakeron)
     - [onSpeakerOff](#onspeakeroff)
+    - [onDTMF](#ondtmf)
 - [Common Errors](#common-errors)
   - [Info.plist](#infoplist)
 - [About](#about)
@@ -423,6 +425,23 @@ A callback that gets executed if the recent calls preference gets changed succes
 Type: *Function*   
 A callback that gets executed if the recent calls preference fails to change
 
+### setDTMFState
+```javascript
+cordova.plugins.CordovaCall.setDTMFState(value [, success] [, error]);
+```
+
+_Support: iOS 10+_   
+
+- **value**  
+Type: *Boolean*   
+Set this to true/false to enable/disable DTMF usage.
+- **success**  
+Type: *Function*   
+A callback that gets executed if DTMF setState changed successfully
+- **error**  
+Type: *Function*   
+A callback that gets executed if the DTMF setState fails to change
+
 ## Events
 
 ### onAnswer
@@ -523,6 +542,17 @@ _Support: iOS 10+_
 - **handler**  
 Type: *Function*   
 A user-defined function that gets executed when you press the speakerOff button on the native call UI, and when you call the [speakerOff](#speakerOff) function.
+
+### onDTMF
+```javascript
+cordova.plugins.CordovaCall.on('DTMF', handler);
+```
+
+_Support: iOS 10+_  
+
+- **handler**  
+Type: *Function*   
+A user-defined function that gets executed when you press the DTMF buttons on the DTMF native call UI and returns a string with the digit pressed.
 
 # Common Errors
 

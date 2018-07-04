@@ -9,6 +9,7 @@ BOOL includeInRecents = NO;
 NSMutableDictionary *callbackIds;
 NSDictionary* pendingCallFromRecents;
 BOOL monitorAudioRouteChange = NO;
+BOOL enableDTMF = NO;
 
 @interface CordovaCall : CDVPlugin <CXProviderDelegate>
     @property (nonatomic, strong) CXProvider *provider;
@@ -30,6 +31,7 @@ BOOL monitorAudioRouteChange = NO;
     - (void)callNumber:(CDVInvokedUrlCommand*)command;
     - (void)receiveCallFromRecents:(NSNotification *) notification;
     - (void)setupAudioSession;
+    - (void)setDTMFState:(CDVInvokedUrlCommand*)command;
 @end
 
 @implementation CordovaCall
@@ -62,6 +64,7 @@ BOOL monitorAudioRouteChange = NO;
     [callbackIds setObject:[NSMutableArray array] forKey:@"unmute"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"speakerOn"];
     [callbackIds setObject:[NSMutableArray array] forKey:@"speakerOff"];
+    [callbackIds setObject:[NSMutableArray array] forKey:@"DTMF"];
     //allows user to make call from recents
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveCallFromRecents:) name:@"RecentsCallNotification" object:nil];
     //detect Audio Route Changes to make speakerOn and speakerOff event handlers
@@ -151,6 +154,14 @@ BOOL monitorAudioRouteChange = NO;
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)setDTMFState:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    enableDTMF = [[command.arguments objectAtIndex:0] boolValue];
+    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"enableDTMF Changed Successfully"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
 - (void)setVideo:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
@@ -182,6 +193,7 @@ BOOL monitorAudioRouteChange = NO;
         callUpdate.supportsGrouping = NO;
         callUpdate.supportsUngrouping = NO;
         callUpdate.supportsHolding = NO;
+        callUpdate.supportsDTMF = enableDTMF;
 
         [self.provider reportNewIncomingCallWithUUID:callUUID update:callUpdate completion:^(NSError * _Nullable error) {
             if(error == nil) {
@@ -317,6 +329,8 @@ BOOL monitorAudioRouteChange = NO;
     callUpdate.supportsGrouping = NO;
     callUpdate.supportsUngrouping = NO;
     callUpdate.supportsHolding = NO;
+    callUpdate.supportsDTMF = enableDTMF;
+    
     [self.provider reportCallWithUUID:action.callUUID updated:callUpdate];
     [action fulfill];
     NSDictionary *callData = @{@"callName":action.contactIdentifier, @"callId": action.handle.value, @"isVideo": action.video?@YES:@NO, @"message": @"sendCall event called successfully"};
@@ -435,6 +449,19 @@ BOOL monitorAudioRouteChange = NO;
                 }
             }
         }
+    }
+}
+
+- (void)provider:(CXProvider *)provider performPlayDTMFCallAction:(CXPlayDTMFCallAction *)action
+{
+    NSLog(@"DTMF Event");
+    NSString *digits = action.digits;
+    [action fulfill];
+    for (id callbackId in callbackIds[@"DTMF"]) {
+        CDVPluginResult* pluginResult = nil;
+        pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:digits];
+        [pluginResult setKeepCallbackAsBool:YES];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
     }
 }
 

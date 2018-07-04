@@ -20,6 +20,14 @@ exports.setIncludeInRecents = function(value, success, error) {
     }
 };
 
+exports.setDTMFState = function(value, success, error) {
+    if(typeof value == "boolean") {
+      exec(success, error, "CordovaCall", "setDTMFState", [value]);
+    } else {
+      error("Value Must Be True Or False");
+    }
+};
+
 exports.setVideo = function(value, success, error) {
     if(typeof value == "boolean") {
       exec(success, error, "CordovaCall", "setVideo", [value]);
