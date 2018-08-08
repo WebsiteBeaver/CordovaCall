@@ -76,9 +76,11 @@ cordova.plugins.CordovaCall.receiveCall('David Marcus');
 
 <img alt="CordovaCall Receive Call iOS CallKit" src="https://user-images.githubusercontent.com/26162804/31639345-435ce6d2-b2a6-11e7-8f2b-01413197f8ed.png" height="600" /> <img alt="CordovaCall Receive Call ConnectionService" src="https://user-images.githubusercontent.com/26162804/31641743-c6a7a348-b2b4-11e7-84fa-fff289754555.png" height="600" />
 
-Once you press Accept on iOS or you Swipe up to answer on Android, you'll see the in-call UI:
+Once you press you Swipe up to answer on Android, you'll see the in-call UI:
 
-<img alt="CordovaCall Answer Call iOS CallKit" src="https://user-images.githubusercontent.com/26162804/31643319-f1c4fa5e-b2bd-11e7-83bc-1706df93ab70.png" height="600" /> <img alt="CordovaCall Answer Call Android ConnectionService" src="https://user-images.githubusercontent.com/26162804/31643304-e08ffb80-b2bd-11e7-8104-4adf85aad3d1.png" height="600" />
+<img alt="CordovaCall Answer Call Android ConnectionService" src="https://user-images.githubusercontent.com/26162804/31643304-e08ffb80-b2bd-11e7-8104-4adf85aad3d1.png" height="600" />
+
+On iOS the native UI goes behind the app and you need to implement your own control interface.
 
 If you're using WebRTC to make a video or audio chat app, you can call [`receiveCall`](#receivecall) right before `pc.setRemoteDescription`. For an excellent explanation of how to use WebRTC check out [this WebsiteBeaver tutorial](https://websitebeaver.com/insanely-simple-webrtc-video-chat-using-firebase-with-codepen-demo).
 
