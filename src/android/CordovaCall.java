@@ -41,6 +41,7 @@ public class CordovaCall extends CordovaPlugin {
     private String from;
     private String to;
     private String realCallTo;
+    private Boolean hasTelephony = false;
     private static HashMap<String, ArrayList<CallbackContext>> callbackContextMap = new HashMap<String, ArrayList<CallbackContext>>();
     private static CordovaInterface cordovaInterface;
     private static Icon icon;
@@ -64,17 +65,23 @@ public class CordovaCall extends CordovaPlugin {
         appName = getApplicationName(this.cordova.getActivity().getApplicationContext());
         handle = new PhoneAccountHandle(new ComponentName(this.cordova.getActivity().getApplicationContext(),MyConnectionService.class),appName);
         tm = (TelecomManager)this.cordova.getActivity().getApplicationContext().getSystemService(this.cordova.getActivity().getApplicationContext().TELECOM_SERVICE);
-        if(android.os.Build.VERSION.SDK_INT >= 26) {
-          phoneAccount = new PhoneAccount.Builder(handle, appName)
-                  .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
-                  .build();
-          tm.registerPhoneAccount(phoneAccount);
-        }
-        if(android.os.Build.VERSION.SDK_INT >= 23) {
-          phoneAccount = new PhoneAccount.Builder(handle, appName)
-                   .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
-                   .build();
-          tm.registerPhoneAccount(phoneAccount);          
+
+        PackageManager mgr = this.cordova.getActivity().getApplicationContext().getPackageManager();
+        hasTelephony = mgr.hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+
+        if (hasTelephony) {
+            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                phoneAccount = new PhoneAccount.Builder(handle, appName)
+                        .setCapabilities(PhoneAccount.CAPABILITY_SELF_MANAGED)
+                        .build();
+                tm.registerPhoneAccount(phoneAccount);
+            }
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                phoneAccount = new PhoneAccount.Builder(handle, appName)
+                        .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER)
+                        .build();
+                tm.registerPhoneAccount(phoneAccount);
+            }
         }
         callbackContextMap.put("answer",new ArrayList<CallbackContext>());
         callbackContextMap.put("reject",new ArrayList<CallbackContext>());
@@ -214,6 +221,10 @@ public class CordovaCall extends CordovaPlugin {
             this.callbackContext.success("Speakerphone is off");
             return true;
         } else if (action.equals("callNumber")) {
+            if (!hasTelephony) {
+                this.callbackContext.error("Telephony is not supported by device");
+                return true;
+            }
             realCallTo = args.getString(0);
             if(realCallTo != null) {
               cordova.getThreadPool().execute(new Runnable() {
@@ -261,6 +272,10 @@ public class CordovaCall extends CordovaPlugin {
     }
 
     private void sendCall() {
+        if (!hasTelephony) {
+            this.callbackContext.error("Telephony is not supported by device");
+            return;
+        }
         Uri uri = Uri.fromParts("tel", to, null);
         Bundle callInfoBundle = new Bundle();
         callInfoBundle.putString("to",to);
