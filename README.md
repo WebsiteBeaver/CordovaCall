@@ -107,6 +107,8 @@ After 5 seconds pass, you'll notice that the screen changes because of the [`con
 
 If you're using WebRTC, you might call `pc.createOffer` in the success callback of [`sendCall`](#sendcall). The best place to call [`connectCall`](#connectcall) is in `pc.onaddstream`.
 
+Note: In iOS, CallKit does not provide a UI when creating a call via [`sendCall`](#sendcall). Your app should handle this by providing a 'in-call' UI. This UI can be accessed from within the incoming call connected UI provided by CallKit by clicking on the provider app icon [`setIcon`](#setIcon)
+
 ## Make A Call From Recents
 
 ```javascript
