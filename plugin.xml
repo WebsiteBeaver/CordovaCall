@@ -15,6 +15,7 @@
         <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"/>
         <uses-permission android:name="android.permission.CALL_PHONE"/>
         <uses-permission android:name="android.permission.MANAGE_OWN_CALLS"/>
+        <uses-feature android:name="android.hardware.telephony" android:required="false" />
     </config-file>
     <config-file parent="/manifest/application" target="AndroidManifest.xml">
         <service android:name="com.dmarc.cordovacall.MyConnectionService"
