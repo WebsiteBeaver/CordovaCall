@@ -310,6 +310,9 @@ public class CordovaCall extends CordovaPlugin {
     private void callNumber() {
         try {
           Intent intent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", realCallTo, null));
+          if (android.os.Build.VERSION.SDK_INT >= 28) {
+              intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          }
           this.cordova.getActivity().getApplicationContext().startActivity(intent);
         } catch(Exception e) {
           this.callbackContext.error("Call Failed");
